@@ -6,12 +6,24 @@ const rl = readline.createInterface({
     output:process.stdout
 });
 
-const connection = {
-    host:"localhost",
-    port:5432,
-    database:"controlgastos",
-    user:"postgres",
-    password:"postgres"
+const db = pgp({
+        host:"localhost",
+        port:5432,
+        database:"controlgastos",
+        user:"postgres",
+        password:"postgres"
+});
+
+let gastos = {
+    insertar: insertarGastos()
 };
 
-const db = pgp(connection);
+function insertarGastos(){
+    rl.question("Ingrese gasto ",nombreGasto =>{
+        db.none(`insert into gastos (nombre) values ('${nombreGasto}')`)
+        .then(()=> console.log("Gasto insertado"))
+        .catch(error => console.log("El nombre ya existe"));
+    });
+}
+
+//module.exports = gastos;
