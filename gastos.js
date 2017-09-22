@@ -82,8 +82,8 @@ function consultarGastos(){
     .then(result => console.log(result));
 }
 
-function isGuardado(nombreGasto){
-    return db.one(`select nombre from gastos where nombre = '${nombreGasto}'`)
+function isGuardado(tabla,nombre){
+    return db.one(`select nombre from ${tabla} where nombre = '${nombre}'`)
         .then(()=> true)
         .catch(()=> false);
 }
