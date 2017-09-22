@@ -17,14 +17,15 @@ const db = pgp({
 let gastos = {
     insertar: insertarGastos,
     borrar: borrarGastos,
-    consultar:consultarGastos()
+    renombrar:renombrarGastos(),
+    consultar:consultarGastos
 };
 
 function insertarGastos(){
     rl.question("Ingrese gasto: ",nombreGasto =>{
         db.none(`insert into gastos (nombre) values ('${nombreGasto}')`)
         .then(()=> console.log("Gasto insertado"))
-        .catch(() => console.log("El gasto ya existe"));
+        .catch(() => console.log("Gasto ya existe"));
     });
 }
 
@@ -36,7 +37,7 @@ function borrarGastos(){
                 return db.none(`delete from gastos where nombre = '${nombreGasto}'`)
                 .then(()=> {return "Gasto borrado";});
             }
-            return "El gasto no existe";
+            return "Gasto no existe";
         }).then(mensaje =>{
             console.log(mensaje);
             rl.close();
