@@ -18,12 +18,13 @@ let controlGastos = {
     gastos:{
         insertar: () => insertar("gastos"),
         borrar: () => borrar("gastos"),
-        renombrar:renombrarGastos,
+        renombrar: () => renombrar("gastos"),
         consultar:consultarGastos
     },
     ingresos:{
         insertar: () => insertar("ingresos"),
-        borrar: () => borrar("ingresos")
+        borrar: () => borrar("ingresos"),
+        renombrar:() => renombrar("ingresos")
     }
 };
 
@@ -53,28 +54,27 @@ function borrar(tabla){
     });
 }
 
-function renombrarGastos(){
-    rl.question("Ingrese gasto: ",nombreGasto =>{
-        isGuardado(nombreGasto)
+function renombrar(tabla){
+    rl.question("Ingrese nombre: ",nombre =>{
+        isGuardado(tabla,nombre)
         .then(result =>{
             if(result){
                 return new Promise(resolve =>{
-                    rl.question("Ingrese nuevo nombre: ",nuevoGasto =>{
-                        if(nuevoGasto !== ""){
-                            db.none(`update gastos set nombre = '${nuevoGasto}' where nombre = '${nombreGasto}'`)
-                            .then(()=> resolve ("Gasto renombrado"))
+                    rl.question("Ingrese nuevo nombre: ",nuevoNombre =>{
+                        if(nuevoNombre !== ""){
+                            db.none(`update ${tabla} set nombre = '${nuevoNombre}' where nombre = '${nombre}'`)
+                            .then(()=> resolve ("Nombre renombrado"))
                             .catch(()=> resolve ("Nombre ya existe"));
                         }
                     });
                 });
             }
-            return "Gasto no existe";
+            return "Nombre no existe";
         }).then(mensaje =>{
             console.log(mensaje);
             rl.close();
         });
     });
-
 }
 
 function consultarGastos(){
