@@ -16,14 +16,15 @@ const db = pgp({
 
 let gastos = {
     insertar: insertarGastos,
-    borrar: borrarGastos()
+    borrar: borrarGastos,
+    consultar:consultarGastos()
 };
 
 function insertarGastos(){
     rl.question("Ingrese gasto: ",nombreGasto =>{
         db.none(`insert into gastos (nombre) values ('${nombreGasto}')`)
         .then(()=> console.log("Gasto insertado"))
-        .catch(error => console.log("El gasto ya existe"));
+        .catch(() => console.log("El gasto ya existe"));
     });
 }
 
@@ -41,6 +42,11 @@ function borrarGastos(){
             rl.close();
         });
     });
+}
+
+function consultarGastos(){
+    db.any("select nombre from gastos")
+    .then(result => console.log(result));
 }
 
 function isGuardado(nombreGasto){
