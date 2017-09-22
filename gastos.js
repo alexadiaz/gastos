@@ -15,24 +15,24 @@ const db = pgp({
 });
 
 let controlGastos = {
-    nombreGastos:{
-        insertar: insertarGastos,
+    gastos:{
+        insertar: () => insertar("gastos"),
         borrar: borrarGastos,
-        renombrar:renombrarGastos(),
+        renombrar:renombrarGastos,
         consultar:consultarGastos
     },
-    nombreIngresos:{
-      
+    ingresos:{
+        insertar: () => insertar("ingresos")
     }
    
 };
 
-function insertarGastos(){
-    rl.question("Ingrese gasto: ",nombreGasto =>{
-        if (nombreGasto !== ""){
-            db.none(`insert into gastos (nombre) values ('${nombreGasto}')`)
-            .then(()=> console.log("Gasto insertado"))
-            .catch(() => console.log("Gasto ya existe"));
+function insertar(tabla){
+    rl.question("Ingrese nombre: ",nombre =>{
+        if (nombre !== ""){
+            db.none(`insert into ${tabla} (nombre) values ('${nombre}')`)
+            .then(()=> console.log("Nombre insertado"))
+            .catch(() => console.log("Nombre ya existe"));
         }
     });
 }
