@@ -44,17 +44,37 @@ function borrarGastos(){
     });
 }
 
+function renombrarGastos(){
+    rl.question("Ingrese gasto: ",nombreGasto =>{
+        isGuardado(nombreGasto)
+        .then(result =>{
+            if(result){
+                return new Promise(resolve =>{
+                    rl.question("Ingrese nuevo nombre: ",nuevoGasto =>{
+                        db.none(`update gastos set nombre = '${nuevoGasto}' where nombre = '${nombreGasto}'`)
+                        .then(()=> resolve ("Gasto renombrado"))
+                        .catch(()=> resolve ("Nombre ya existe"));
+                    });
+                });
+            }
+            return "Gasto no existe";
+        }).then(mensaje =>{
+            console.log(mensaje);
+            rl.close();
+        });
+    });
+
+}
+
 function consultarGastos(){
     db.any("select nombre from gastos")
     .then(result => console.log(result));
 }
 
 function isGuardado(nombreGasto){
-    return new Promise(resolve =>{
-        db.one(`select nombre from gastos where nombre = '${nombreGasto}'`)
-        .then(()=> resolve (true))
-        .catch(()=> resolve(false));
-    });
+    return db.one(`select nombre from gastos where nombre = '${nombreGasto}'`)
+        .then(()=> true)
+        .catch(()=> false);
 }
 
 //module.exports = gastos;
