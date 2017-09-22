@@ -37,15 +37,15 @@ function insertar(tabla){
     });
 }
 
-function borrarGastos(){
-    rl.question("Ingrese gasto: ",nombreGasto =>{
-        isGuardado(nombreGasto)
+function borrar(tabla){
+    rl.question("Ingrese nombre: ",nombre =>{
+        isGuardado(tabla,nombre)
         .then(result => {
             if (result){
-                return db.none(`delete from gastos where nombre = '${nombreGasto}'`)
-                .then(()=> {return "Gasto borrado";});
+                return db.none(`delete from ${tabla} where nombre = '${nombre}'`)
+                .then(()=> {return "Nombre borrado";});
             }
-            return "Gasto no existe";
+            return "Nombre no existe";
         }).then(mensaje =>{
             console.log(mensaje);
             rl.close();
