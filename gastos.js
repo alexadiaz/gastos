@@ -19,12 +19,13 @@ let controlGastos = {
         insertar: () => insertar("gastos"),
         borrar: () => borrar("gastos"),
         renombrar: () => renombrar("gastos"),
-        consultar:consultarGastos
+        consultar: () => consultar("gastos")
     },
     ingresos:{
         insertar: () => insertar("ingresos"),
         borrar: () => borrar("ingresos"),
-        renombrar:() => renombrar("ingresos")
+        renombrar: () => renombrar("ingresos"),
+        consultar: () => consultar("ingresos")
     }
 };
 
@@ -77,8 +78,8 @@ function renombrar(tabla){
     });
 }
 
-function consultarGastos(){
-    db.any("select nombre from gastos")
+function consultar(tabla){
+    db.any(`select nombre from ${tabla}`)
     .then(result => console.log(result));
 }
 
