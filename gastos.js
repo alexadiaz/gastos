@@ -14,18 +14,26 @@ const db = pgp({
         password:"postgres"
 });
 
-let gastos = {
-    insertar: insertarGastos,
-    borrar: borrarGastos,
-    renombrar:renombrarGastos(),
-    consultar:consultarGastos
+let controlGastos = {
+    nombreGastos:{
+        insertar: insertarGastos,
+        borrar: borrarGastos,
+        renombrar:renombrarGastos(),
+        consultar:consultarGastos
+    },
+    nombreIngresos:{
+      
+    }
+   
 };
 
 function insertarGastos(){
     rl.question("Ingrese gasto: ",nombreGasto =>{
-        db.none(`insert into gastos (nombre) values ('${nombreGasto}')`)
-        .then(()=> console.log("Gasto insertado"))
-        .catch(() => console.log("Gasto ya existe"));
+        if (nombreGasto !== ""){
+            db.none(`insert into gastos (nombre) values ('${nombreGasto}')`)
+            .then(()=> console.log("Gasto insertado"))
+            .catch(() => console.log("Gasto ya existe"));
+        }
     });
 }
 
@@ -52,9 +60,11 @@ function renombrarGastos(){
             if(result){
                 return new Promise(resolve =>{
                     rl.question("Ingrese nuevo nombre: ",nuevoGasto =>{
-                        db.none(`update gastos set nombre = '${nuevoGasto}' where nombre = '${nombreGasto}'`)
-                        .then(()=> resolve ("Gasto renombrado"))
-                        .catch(()=> resolve ("Nombre ya existe"));
+                        if(nuevoGasto !== ""){
+                            db.none(`update gastos set nombre = '${nuevoGasto}' where nombre = '${nombreGasto}'`)
+                            .then(()=> resolve ("Gasto renombrado"))
+                            .catch(()=> resolve ("Nombre ya existe"));
+                        }
                     });
                 });
             }
@@ -78,4 +88,4 @@ function isGuardado(nombreGasto){
         .catch(()=> false);
 }
 
-//module.exports = gastos;
+//module.exports = controlGastos;
