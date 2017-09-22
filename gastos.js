@@ -17,14 +17,14 @@ const db = pgp({
 let controlGastos = {
     gastos:{
         insertar: () => insertar("gastos"),
-        borrar: borrarGastos,
+        borrar: () => borrar("gastos"),
         renombrar:renombrarGastos,
         consultar:consultarGastos
     },
     ingresos:{
-        insertar: () => insertar("ingresos")
+        insertar: () => insertar("ingresos"),
+        borrar: () => borrar("ingresos")
     }
-   
 };
 
 function insertar(tabla){
