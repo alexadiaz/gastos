@@ -94,4 +94,45 @@ function isGuardado(tabla,nombre){
         .catch(()=> false);
 }
 
+function insertarPeriodos(){
+    rl.question("Ingrese mes: ",mes =>{
+        if (mes !== ""){
+            rl.question("Ingrese ano: ",ano =>{
+                if(ano !== ""){
+                    db.none(`insert into periodos (mes,ano) values (${mes},${ano})`)
+                    .then(()=> console.log("Periodo ingresado"))
+                    .catch(()=> console.log("Periodo no valido o ya existe"));
+                }
+            });
+        }
+    });
+}
+
+function borrarPeriodos(){
+    rl.question("Ingrese mes: ",mes =>{
+        if (mes !== ""){
+            rl.question("Ingrese ano: ",ano =>{
+                isGuardadoPeriodo("periodos",mes,ano)
+                .then(result =>{
+                    if (result){
+                        return db.none(`delete from periodos where mes = ${mes} and ano = ${ano}`)
+                        .then(()=> {return "Periodo borrado";})
+                        .catch(() => {return "Periodo esta siendo usado en pagos realizados y/o recibidos";});
+                    }
+                    return "Periodo no existe";
+                }).then(mensaje =>{
+                    console.log(mensaje);
+                    rl.close();
+                });
+            });
+        }
+    });
+}
+
+function isGuardadoPeriodo(tabla,mes,ano){
+     return db.one(`select mes,ano from ${tabla} where mes=${mes} and ano=${ano}`)
+    .then(() => true)
+    .catch(() => false);
+}
+
 //module.exports = controlGastos;
