@@ -28,23 +28,10 @@ let controlGastos = {
         consultar: () => consultar("ingresos")
     },
     periodos:{
-        insertar:() => insertarPeriodos()
+        insertar:() => insertarPeriodos(),
+        borrar: () => borrarPeriodos()
     }
 };
-
-function insertarPeriodos(){
-    rl.question("Ingrese mes: ",mes =>{
-        if (mes !== ""){
-            rl.question("Ingrese ano: ",ano =>{
-                if(ano !== ""){
-                    db.none(`insert into periodos (mes,ano) values (${mes},${ano})`)
-                    .then(()=> console.log("Periodo ingresado"))
-                    .catch(()=> console.log("Periodo no valido o ya existe"));
-                }
-            });
-        }
-    });
-}
 
 function insertar(tabla){
     rl.question("Ingrese nombre: ",nombre =>{
