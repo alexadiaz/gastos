@@ -49,7 +49,8 @@ function borrar(tabla){
         .then(result => {
             if (result){
                 return db.none(`delete from ${tabla} where nombre = '${nombre}'`)
-                .then(()=> {return "Nombre borrado";});
+                .then(()=> {return "Nombre borrado";})
+                .catch(() => {return "Nombre esta siendo usado en pagos realizados y/o recibidos";});
             }
             return "Nombre no existe";
         }).then(mensaje =>{
