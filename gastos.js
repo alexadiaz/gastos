@@ -89,9 +89,24 @@ function consultar(tabla){
 }
 
 function isGuardado(tabla,nombre){
-    return db.one(`select nombre from ${tabla} where nombre = '${nombre}'`)
-        .then(()=> true)
+    return db.one(`select id from ${tabla} where nombre = '${nombre}'`)
+        .then((id)=> id)
         .catch(()=> false);
+}
+
+function isGuardadoPagos(tabla,id){
+    let tablaConsultar = null;
+    let campo = null;
+    if(tabla === "gastos"){
+        tablaConsultar = "pagosrealizados";
+        campo = "gastosid";
+    }
+    else{
+        tablaConsultar = "pagosrecibidos";
+        campo = "ingresoid"; 
+    }
+    return db.any(`select id from ${tablaConsultar} where ${campo} = ${id.id}`)
+    .then((result)=> result);
 }
 
 function insertarPeriodos(){
