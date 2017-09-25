@@ -46,13 +46,13 @@ function insertar(tabla){
 function borrar(tabla){
     rl.question("Ingrese nombre: ",nombre =>{
         isGuardado(tabla,nombre)
-        .then(result => {
-            if (result){
-                return db.none(`delete from ${tabla} where nombre = '${nombre}'`)
-                .then(()=> {return "Nombre borrado";})
-                .catch(() => {return "Nombre esta siendo usado en pagos realizados y/o recibidos";});
+        .then(id => {
+            if (!id){
+                return "Nombre no existe";
             }
-            return "Nombre no existe";
+            return db.none(`delete from ${tabla} where nombre = '${nombre}'`)
+            .then(()=> {return "Nombre borrado";})
+            .catch(() => {return "Nombre esta siendo usado en pagos realizados y/o recibidos";});
         }).then(mensaje =>{
             console.log(mensaje);
             rl.close();
@@ -63,8 +63,15 @@ function borrar(tabla){
 function renombrar(tabla){
     rl.question("Ingrese nombre: ",nombre =>{
         isGuardado(tabla,nombre)
-        .then(result =>{
-            if(result){
+        .then(id =>{
+            if(!id){
+                return "Nombre no existe";
+            }
+            return isGuardadoPagos(tabla,id)
+            .then(result =>{
+                if(result.length !== 0){
+                    return "Nombre esta siendo usado en pagos realizados y/o recibidos";
+                }
                 return new Promise(resolve =>{
                     rl.question("Ingrese nuevo nombre: ",nuevoNombre =>{
                         if(nuevoNombre !== ""){
@@ -74,8 +81,7 @@ function renombrar(tabla){
                         }
                     });
                 });
-            }
-            return "Nombre no existe";
+            });
         }).then(mensaje =>{
             console.log(mensaje);
             rl.close();
