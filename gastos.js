@@ -29,7 +29,8 @@ let controlGastos = {
     },
     periodos:{
         insertar:() => insertarPeriodos(),
-        borrar: () => borrarPeriodos()
+        borrar: () => borrarPeriodos(),
+        consultar: () => consultarPeriodos()
     }
 };
 
@@ -148,6 +149,11 @@ function borrarPeriodos(){
             });
         }
     });
+}
+
+function consultarPeriodos(){
+    db.any(`select mes,ano from periodos`)
+    .then(result => console.log(result));
 }
 
 function isGuardadoPeriodo(tabla,mes,ano){
