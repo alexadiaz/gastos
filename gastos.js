@@ -30,7 +30,16 @@ let controlGastos = {
     periodos:{
         insertar:() => insertarPeriodos(),
         borrar: () => borrarPeriodos(),
+        renombrar: () => renombrarPeriodos(),
         consultar: () => consultarPeriodos()
+    },
+    pagosrecibidos:{
+        insertar:null,
+        consultar:null
+    },
+    pagosrealizados:{
+        insertar:null,
+        consultar:null
     }
 };
 
@@ -73,19 +82,23 @@ function renombrar(tabla){
                 if(result.length !== 0){
                     return "Nombre esta siendo usado en pagos realizados y/o recibidos";
                 }
-                return new Promise(resolve =>{
-                    rl.question("Ingrese nuevo nombre: ",nuevoNombre =>{
-                        if(nuevoNombre !== ""){
-                            db.none(`update ${tabla} set nombre = '${nuevoNombre}' where nombre = '${nombre}'`)
-                            .then(()=> resolve ("Nombre renombrado"))
-                            .catch(()=> resolve ("Nombre ya existe"));
-                        }
-                    });
-                });
+                return nuevoRenombrar(tabla,nombre);
             });
         }).then(mensaje =>{
             console.log(mensaje);
             rl.close();
+        });
+    });
+}
+
+function nuevoRenombrar(tabla,nombre){
+    return new Promise(resolve =>{
+        rl.question("Ingrese nuevo nombre: ",nuevoNombre =>{
+            if(nuevoNombre !== ""){
+                db.none(`update ${tabla} set nombre = '${nuevoNombre}' where nombre = '${nombre}'`)
+                .then(()=> resolve ("Nombre renombrado"))
+                .catch(()=> resolve ("Nombre ya existe"));
+            }
         });
     });
 }
@@ -108,9 +121,17 @@ function isGuardadoPagos(tabla,id){
         tablaConsultar = "pagosrealizados";
         campo = "gastosid";
     }
-    else{
+    else if(tabla === "ingresos"){
         tablaConsultar = "pagosrecibidos";
         campo = "ingresoid"; 
+    }
+    else if(tabla === "pagosrecibidos"){
+        tablaConsultar = tabla;
+        campo =  "periodoid";
+    }
+    else{
+        tablaConsultar = tabla;
+        campo =  "periodoid";
     }
     return db.any(`select id from ${tablaConsultar} where ${campo} = ${id.id}`)
     .then((result)=> result);
@@ -134,7 +155,7 @@ function borrarPeriodos(){
     rl.question("Ingrese mes: ",mes =>{
         if (mes !== ""){
             rl.question("Ingrese ano: ",ano =>{
-                isGuardadoPeriodo("periodos",mes,ano)
+                isGuardadoPeriodo(mes,ano)
                 .then(result =>{
                     if (result){
                         return db.none(`delete from periodos where mes = ${mes} and ano = ${ano}`)
@@ -151,14 +172,63 @@ function borrarPeriodos(){
     });
 }
 
+function renombrarPeriodos(){
+    rl.question("Ingrese mes: ",mes =>{
+        if (mes !== ""){
+            rl.question("Ingrese ano: ",ano =>{
+                if(ano !== ""){
+                    isGuardadoPeriodo(mes,ano)
+                    .then(id =>{
+                        if(!id){
+                            return "Periodo no existe";
+                        }
+                        return isGuardadoPagos("pagosrecibidos",id)
+                        .then(result =>{
+                            if(result.length !== 0){
+                                return "Periodo esta siendo usado en pagos recibidos";
+                            }
+                            return isGuardadoPagos("pagosrealizados",id)
+                            .then(result => {
+                                if(result.length !== 0){
+                                    return "Periodo esta siendo usado en pagos realizados";
+                                }
+                                return nuevoRenombrarPeriodos(mes,ano);
+                            });
+                        });
+                    }).then(mensaje =>{
+                        console.log(mensaje);
+                        rl.close();
+                    });
+                }
+            });
+        }
+    });
+}
+
+function nuevoRenombrarPeriodos(mes,ano){
+    return new Promise(resolve =>{
+        rl.question("Ingrese nuevo mes: ",nuevoMes =>{
+            if(nuevoMes !== ""){
+                rl.question("Ingrese ano: ",nuevoAno =>{
+                    if(ano !== ""){
+                        db.none(`update periodos set mes = ${nuevoMes},ano = ${nuevoAno} where mes = ${mes} and ano = ${ano}`)
+                        .then(()=> resolve ("Periodo renombrado"))
+                        .catch(()=> resolve ("Periodo ya existe"));
+                    }
+                });
+            }
+        });
+    });
+}
+       
 function consultarPeriodos(){
-    db.any(`select mes,ano from periodos`)
+    db.any("select mes,ano from periodos")
     .then(result => console.log(result));
 }
 
-function isGuardadoPeriodo(tabla,mes,ano){
-     return db.one(`select mes,ano from ${tabla} where mes=${mes} and ano=${ano}`)
-    .then(() => true)
+function isGuardadoPeriodo(mes,ano){
+     return db.one(`select id from periodos where mes=${mes} and ano=${ano}`)
+    .then((id) => id)
     .catch(() => false);
 }
 
