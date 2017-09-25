@@ -35,7 +35,7 @@ let controlGastos = {
     },
     pagosrecibidos:{
         insertar:null,
-        consultar:null
+        consultar: () => consultarPagosRecibidos()
     },
     pagosrealizados:{
         insertar:null,
@@ -230,6 +230,11 @@ function isGuardadoPeriodo(mes,ano){
      return db.one(`select id from periodos where mes=${mes} and ano=${ano}`)
     .then((id) => id)
     .catch(() => false);
+}
+
+function consultarPagosRecibidos(){
+    db.any("select pe.mes,pe.ano,i.nombre,pr.valor from pagosrecibidos pr join periodos pe on pr.periodoid= pe.id join ingresos i on pr.ingresoid=i.id")
+    .then(result => console.log(result));
 }
 
 //module.exports = controlGastos;
