@@ -35,6 +35,7 @@ let controlGastos = {
     },
     pagosrecibidos:{
         insertar: () => insertarPagosRecibidos(),
+        borrar: () => borrarPagosRecibidos(),
         consultar: () => consultarPagosRecibidos()
     },
     pagosrealizados:{
@@ -280,6 +281,17 @@ function pagosRecibidos(periodoid){
                 });
             }
         });
+    });
+}
+
+function borrarPagosRecibidos(){
+    rl.question("Ingrese id: ",id =>{
+        db.one(`select id from pagosrecibidos where id = ${id}`)
+        .then(result => {
+            db.none(`delete from pagosrecibidos where id = ${result.id}`)
+            .then(()=> console.log ("Pago recibido borrado"));
+        })
+        .catch(()=> console.log("id no existe"));
     });
 }
 
