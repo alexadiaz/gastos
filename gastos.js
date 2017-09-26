@@ -36,15 +36,17 @@ let controlGastos = {
     pagosrecibidos:{
         insertar: () => insertarPagos("pagosrecibidos","ingresos","ingresoid"),
         borrar: () => borrarPagos("pagosrecibidos"),
+        renombrar: () => renombrarPagos("pagosrecibidos","ingresos","ingresoid"),
         consultar: () => consultarPagosRecibidos()
     },
     pagosrealizados:{
         insertar: () => insertarPagos("pagosrealizados","gastos","gastosid"),
         borrar: () => borrarPagos("pagosrealizados"),
+        renombrar: () => renombrarPagos("pagosrealizados","gastos","gastosid"),
         consultar: () => consultarPagosRealizados()
     }
 };
-
+renombrarPagos("pagosrealizados","gastos","gastosid");
 function insertar(tabla){
     rl.question("Ingrese nombre: ",nombre =>{
         if (nombre !== ""){
@@ -206,10 +208,10 @@ function nuevoRenombrarPeriodos(mes,ano){
         .then(datos =>{
             if(datos){
                 db.none(`update periodos set mes = ${datos.mes},ano = ${datos.ano} where mes = ${mes} and ano = ${ano}`)
-                        .then(()=> resolve ("Periodo renombrado"))
-                        .catch(()=> resolve ("Periodo ya existe"));
-                    }
-                });
+                .then(()=> resolve ("Periodo renombrado"))
+                .catch(()=> resolve ("Periodo ya existe"));
+            }
+        });
     });
 }
        
@@ -250,7 +252,7 @@ function insertarPagos(tabla,tablaCompara,campo){
                 if (!periodoid){
                     return "Periodo no existe";
                 }
-                return pagos(tabla,tablaCompara,campo,periodoid);
+                return pagos(tabla,tablaCompara,campo,periodoid,"insertar");
             }).then(mensaje =>{
                 console.log(mensaje);
                 rl.close();
@@ -259,7 +261,7 @@ function insertarPagos(tabla,tablaCompara,campo){
     });
 }
 
-function pagos(tabla,tablaCompara,campo,periodoid){
+function pagos(tabla,tablaCompara,campo,periodoid,accion,idRenombrar){
     return new Promise(resolve =>{
         rl.question("Ingrese nombre: ",nombre =>{
             if (nombre !== ""){
@@ -271,11 +273,18 @@ function pagos(tabla,tablaCompara,campo,periodoid){
                     }
                     rl.question("Ingrese valor: ",valor =>{
                         if (valor !== ""){
-                            db.none(`insert into ${tabla} (periodoid,${campo},valor) values (${periodoid.id},${id.id},${valor})`)
-                            .then(()=> resolve ("Pago ingresado"))
-                            .catch(()=> resolve ("Valor no es valido"));
+                            if(accion === "insertar"){
+                                db.none(`insert into ${tabla} (periodoid,${campo},valor) values (${periodoid.id},${id.id},${valor})`)
+                                .then(()=> resolve ("Pago ingresado"))
+                                .catch(()=> resolve ("Valor no es valido"));
+                            }
+                            else{
+                                db.none(`update ${tabla} set periodoid = ${periodoid.id},${campo} = ${id.id},valor = ${valor} where id = ${idRenombrar}`)
+                                .then(()=> resolve ("Pago renombrado"))
+                                .catch(()=> resolve ("Valor no es valido"));
+                            }
                         }
-                    });
+                     });
                 });
             }
         });
@@ -293,6 +302,30 @@ function borrarPagos(tabla){
     });
 }
 
+function renombrarPagos(tabla,tablaCompara,campo){
+    rl.question("Ingrese id: ",id =>{
+        db.one(`select id from ${tabla} where id = ${id}`)
+        .then(result => {
+            periodos()
+            .then(datos =>{
+                if (datos){
+                    isGuardadoPeriodo(datos.mes,datos.ano)
+                    .then(periodoid =>{
+                        if (!periodoid){
+                            return "Periodo no existe";
+                        }
+                        return pagos(tabla,tablaCompara,campo,periodoid,"renombrar",id);
+                    }).then(mensaje =>{
+                        console.log(mensaje);
+                        rl.close();
+                    });
+                }
+            });
+        })
+        .catch(()=> console.log("id no existe"));
+    });
+}
+
 function consultarPagosRecibidos(){
     db.any("select pr.id,pe.mes,pe.ano,i.nombre,pr.valor from pagosrecibidos pr join periodos pe on pr.periodoid= pe.id join ingresos i on pr.ingresoid=i.id")
     .then(result => console.log(result));
@@ -303,4 +336,4 @@ function consultarPagosRealizados(){
     .then(result => console.log(result));
 }
 
-//module.exports = controlGastos;
+module.exports = controlGastos;
