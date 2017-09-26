@@ -242,6 +242,47 @@ function isGuardadoPeriodo(mes,ano){
     .catch(() => false);
 }
 
+function insertarPagosRecibidos(){
+    periodos()
+    .then(datos =>{
+        if(datos){
+            isGuardadoPeriodo(datos.mes,datos.ano)
+            .then(periodoid =>{
+                if (!periodoid){
+                    return "Periodo no existe";
+                }
+                return pagosRecibidos(periodoid);
+            }).then(mensaje =>{
+                console.log(mensaje);
+                rl.close();
+            });
+        }
+    });
+}
+
+function pagosRecibidos(periodoid){
+    return new Promise(resolve =>{
+        rl.question("Ingrese nombre de ingreso: ",nombre =>{
+            if (nombre !== ""){
+                isGuardado("ingresos",nombre)
+                .then(ingresoid =>{
+                    if (!ingresoid){
+                        resolve ("Ingreso no existe");
+                        return;
+                    }
+                    rl.question("Ingrese valor: ",valor =>{
+                        if (valor !== ""){
+                            db.none(`insert into pagosrecibidos (periodoid,ingresoid,valor) values (${periodoid.id},${ingresoid.id},${valor})`)
+                            .then(()=> resolve ("Pago recibido ingresado"))
+                            .catch(()=> resolve ("Valor no es valido"));
+                        }
+                    });
+                });
+            }
+        });
+    });
+}
+
 function consultarPagosRecibidos(){
     db.any("select pe.mes,pe.ano,i.nombre,pr.valor from pagosrecibidos pr join periodos pe on pr.periodoid= pe.id join ingresos i on pr.ingresoid=i.id")
     .then(result => console.log(result));
