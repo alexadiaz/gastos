@@ -202,17 +202,14 @@ function renombrarPeriodos(){
                     
 function nuevoRenombrarPeriodos(mes,ano){
     return new Promise(resolve =>{
-        rl.question("Ingrese nuevo mes: ",nuevoMes =>{
-            if(nuevoMes !== ""){
-                rl.question("Ingrese ano: ",nuevoAno =>{
-                    if(ano !== ""){
-                        db.none(`update periodos set mes = ${nuevoMes},ano = ${nuevoAno} where mes = ${mes} and ano = ${ano}`)
+        periodos()
+        .then(datos =>{
+            if(datos){
+                db.none(`update periodos set mes = ${datos.mes},ano = ${datos.ano} where mes = ${mes} and ano = ${ano}`)
                         .then(()=> resolve ("Periodo renombrado"))
                         .catch(()=> resolve ("Periodo ya existe"));
                     }
                 });
-            }
-        });
     });
 }
        
