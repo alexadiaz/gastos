@@ -46,7 +46,7 @@ let controlGastos = {
         consultar: () => consultarPagosRealizados()
     }
 };
-renombrarPagos("pagosrealizados","gastos","gastosid");
+
 function insertar(tabla){
     rl.question("Ingrese nombre: ",nombre =>{
         if (nombre !== ""){
