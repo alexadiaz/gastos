@@ -34,7 +34,7 @@ let controlGastos = {
         consultar: () => consultarPeriodos()
     },
     pagosrecibidos:{
-        insertar:null,
+        insertar: () => insertarPagosRecibidos(),
         consultar: () => consultarPagosRecibidos()
     },
     pagosrealizados:{
@@ -138,73 +138,66 @@ function isGuardadoPagos(tabla,id){
 }
 
 function insertarPeriodos(){
-    rl.question("Ingrese mes: ",mes =>{
-        if (mes !== ""){
-            rl.question("Ingrese ano: ",ano =>{
-                if(ano !== ""){
-                    db.none(`insert into periodos (mes,ano) values (${mes},${ano})`)
-                    .then(()=> console.log("Periodo ingresado"))
-                    .catch(()=> console.log("Periodo no valido o ya existe"));
-                }
-            });
+    periodos()
+    .then(datos =>{
+        if(datos){
+            db.none(`insert into periodos (mes,ano) values (${datos.mes},${datos.ano})`)
+            .then(()=> console.log("Periodo ingresado"))
+            .catch(()=> console.log("Periodo no valido o ya existe"));
         }
     });
 }
 
 function borrarPeriodos(){
-    rl.question("Ingrese mes: ",mes =>{
-        if (mes !== ""){
-            rl.question("Ingrese ano: ",ano =>{
-                isGuardadoPeriodo(mes,ano)
-                .then(result =>{
-                    if (result){
-                        return db.none(`delete from periodos where mes = ${mes} and ano = ${ano}`)
-                        .then(()=> {return "Periodo borrado";})
-                        .catch(() => {return "Periodo esta siendo usado en pagos realizados y/o recibidos";});
-                    }
-                    return "Periodo no existe";
-                }).then(mensaje =>{
-                    console.log(mensaje);
-                    rl.close();
-                });
+    periodos()
+    .then(datos =>{
+        if(datos){
+            isGuardadoPeriodo(datos.mes,datos.ano)
+            .then(result =>{
+                if (result){
+                    return db.none(`delete from periodos where mes = ${datos.mes} and ano = ${datos.ano}`)
+                    .then(()=> {return "Periodo borrado";})
+                    .catch(() => {return "Periodo esta siendo usado en pagos realizados y/o recibidos";});
+                }
+                return "Periodo no existe";
+            }).then(mensaje =>{
+                console.log(mensaje);
+                rl.close();
             });
         }
     });
 }
 
 function renombrarPeriodos(){
-    rl.question("Ingrese mes: ",mes =>{
-        if (mes !== ""){
-            rl.question("Ingrese ano: ",ano =>{
-                if(ano !== ""){
-                    isGuardadoPeriodo(mes,ano)
-                    .then(id =>{
-                        if(!id){
-                            return "Periodo no existe";
-                        }
-                        return isGuardadoPagos("pagosrecibidos",id)
-                        .then(result =>{
-                            if(result.length !== 0){
-                                return "Periodo esta siendo usado en pagos recibidos";
-                            }
-                            return isGuardadoPagos("pagosrealizados",id)
-                            .then(result => {
-                                if(result.length !== 0){
-                                    return "Periodo esta siendo usado en pagos realizados";
-                                }
-                                return nuevoRenombrarPeriodos(mes,ano);
-                            });
-                        });
-                    }).then(mensaje =>{
-                        console.log(mensaje);
-                        rl.close();
-                    });
+   periodos()
+   .then(datos =>{
+       if(datos){
+            isGuardadoPeriodo(datos.mes,datos.ano)
+            .then(id =>{
+                if(!id){
+                    return "Periodo no existe";
                 }
+                return isGuardadoPagos("pagosrecibidos",id)
+                .then(result =>{
+                    if(result.length !== 0){
+                        return "Periodo esta siendo usado en pagos recibidos";
+                    }
+                    return isGuardadoPagos("pagosrealizados",id)
+                    .then(result => {
+                        if(result.length !== 0){
+                            return "Periodo esta siendo usado en pagos realizados";
+                        }
+                        return nuevoRenombrarPeriodos(datos.mes,datos.ano);
+                    });
+                });
+            }).then(mensaje =>{
+                console.log(mensaje);
+                rl.close();
             });
         }
     });
-}
-
+}            
+                    
 function nuevoRenombrarPeriodos(mes,ano){
     return new Promise(resolve =>{
         rl.question("Ingrese nuevo mes: ",nuevoMes =>{
@@ -224,6 +217,23 @@ function nuevoRenombrarPeriodos(mes,ano){
 function consultarPeriodos(){
     db.any("select mes,ano from periodos")
     .then(result => console.log(result));
+}
+
+function periodos(){
+    return new Promise (resolve => {
+        let datos = null;
+        rl.question("Ingrese mes: ",mes =>{
+            if (mes !== ""){
+                rl.question("Ingrese ano: ",ano =>{
+                    if(ano !== ""){
+                        resolve (datos = {mes: mes,ano: ano});
+                        return;
+                    }
+                    resolve (false);
+                });
+            }
+        });
+    });
 }
 
 function isGuardadoPeriodo(mes,ano){
