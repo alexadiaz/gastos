@@ -34,12 +34,12 @@ let controlGastos = {
         consultar: () => consultarPeriodos()
     },
     pagosrecibidos:{
-        insertar: () => insertarPagosRecibidos(),
+        insertar: () => insertarPagos("pagosrecibidos","ingresos","ingresoid"),
         borrar: () => borrarPagos("pagosrecibidos"),
         consultar: () => consultarPagosRecibidos()
     },
     pagosrealizados:{
-        insertar:null,
+        insertar: () => insertarPagos("pagosrealizados","gastos","gastosid"),
         borrar: () => borrarPagos("pagosrealizados"),
         consultar: () => consultarPagosRealizados()
     }
@@ -244,7 +244,7 @@ function isGuardadoPeriodo(mes,ano){
     .catch(() => false);
 }
 
-function insertarPagosRecibidos(){
+function insertarPagos(tabla,tablaCompara,campo){
     periodos()
     .then(datos =>{
         if(datos){
@@ -253,7 +253,7 @@ function insertarPagosRecibidos(){
                 if (!periodoid){
                     return "Periodo no existe";
                 }
-                return pagosRecibidos(periodoid);
+                return pagos(tabla,tablaCompara,campo,periodoid);
             }).then(mensaje =>{
                 console.log(mensaje);
                 rl.close();
@@ -262,20 +262,20 @@ function insertarPagosRecibidos(){
     });
 }
 
-function pagosRecibidos(periodoid){
+function pagos(tabla,tablaCompara,campo,periodoid){
     return new Promise(resolve =>{
-        rl.question("Ingrese nombre de ingreso: ",nombre =>{
+        rl.question("Ingrese nombre: ",nombre =>{
             if (nombre !== ""){
-                isGuardado("ingresos",nombre)
-                .then(ingresoid =>{
-                    if (!ingresoid){
-                        resolve ("Ingreso no existe");
+                isGuardado(tablaCompara,nombre)
+                .then(id =>{
+                    if (!id){
+                        resolve ("Nombre no existe");
                         return;
                     }
                     rl.question("Ingrese valor: ",valor =>{
                         if (valor !== ""){
-                            db.none(`insert into pagosrecibidos (periodoid,ingresoid,valor) values (${periodoid.id},${ingresoid.id},${valor})`)
-                            .then(()=> resolve ("Pago recibido ingresado"))
+                            db.none(`insert into ${tabla} (periodoid,${campo},valor) values (${periodoid.id},${id.id},${valor})`)
+                            .then(()=> resolve ("Pago ingresado"))
                             .catch(()=> resolve ("Valor no es valido"));
                         }
                     });
