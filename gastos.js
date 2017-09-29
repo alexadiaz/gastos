@@ -67,14 +67,30 @@ function insertar(tabla,datos){
 }
 
 function borrar(tabla,datos){
-    db.one(`select id from ${tabla} where nombre = $1`, datos.nombre)
-        .then(() => {
-            db.none(`delete from ${tabla} where nombre = $1`, datos.nombre)
-                .then(()=> console.log("Nombre borrado"))
-                .catch(() => console.log ("Nombre esta siendo usado en pagos realizados y/o recibidos"));
+    db.oneOrNone(`select id from ${tabla} where nombre = $1`, datos.nombre)
+        .then((id) => {
+            if (id ===  null){
+                return true;
+            }
+            let q1 = db.one("select count(id) from pagosrecibidos where id = $1", id.id, c => parseInt(c.count,10));
+            let q2 = db.one("select count(id) from pagosrealizados where id = $1",id.id, c => parseInt(c.count,10));
+            return Promise.all([q1, q2]);
         })
-        .catch (() => console.log("Nombre no existe"));
-}
+        .then(result => {
+            if(result === true){
+                return "Nombre no existe";
+            } 
+            if(result[0] !== 0){
+                return "Nombre esta siendo usado en pagos recibidos";
+            }
+            if(result[1] !== 0){
+                return "Nombre esta siendo usado en pagos realizados";
+            }
+            return db.none(`delete from ${tabla} where nombre = $1`, datos.nombre)
+                    .then(()=> "Nombre borrado");
+        })
+        .then(mensaje => console.log(mensaje));
+}    
 
 function renombrar(info,datos){
     if (datos.nuevoNombre !== ""){
