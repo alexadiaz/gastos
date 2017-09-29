@@ -8,7 +8,7 @@ const rl = readline.createInterface({
 
 let datos={};
 
-function insertar_borrar_gastos_ingresos(){
+function insertar_borrar_gastos_ingresos(){// eslint-disable-line no-unused-vars 
     rl.question("Ingrese nombre: ",nombre =>{
         datos.nombre = nombre;
         controlGastos.gastos.insertar(datos);
@@ -16,7 +16,7 @@ function insertar_borrar_gastos_ingresos(){
     });
 }
 
-function renombrar_gastos_ingresos(){
+function renombrar_gastos_ingresos(){// eslint-disable-line no-unused-vars 
     rl.question("Ingrese nombre: ",nombre =>{
         rl.question("Ingrese nuevo nombre: ",nuevoNombre =>{
             datos.nombre = nombre;
@@ -27,7 +27,7 @@ function renombrar_gastos_ingresos(){
     });
 }
 
-function insertar_borrar_periodos(){
+function insertar_borrar_periodos(){// eslint-disable-line no-unused-vars 
     rl.question("Ingrese mes: ",mes =>{
         rl.question("Ingrese ano: ",ano =>{
             datos.mes = mes;
@@ -38,7 +38,7 @@ function insertar_borrar_periodos(){
     });
 }
 
-function renombrar_periodos(){
+function renombrar_periodos(){// eslint-disable-line no-unused-vars 
     rl.question("Ingrese mes: ",mes =>{
         rl.question("Ingrese ano: ",ano =>{
             rl.question("Ingrese nuevo mes: ",nuevoMes =>{
@@ -55,7 +55,7 @@ function renombrar_periodos(){
     });
 }
 
-function insertar_pagosrecibidos_realizados(){
+function insertar_pagosrecibidos_realizados(){// eslint-disable-line no-unused-vars 
     rl.question("Ingrese mes: ",mes =>{
         rl.question("Ingrese ano: ",ano =>{
             rl.question("Ingrese nombre: ",nombre =>{
@@ -72,7 +72,7 @@ function insertar_pagosrecibidos_realizados(){
     });
 }
 
-function borrar_pagosrecibidos_realizados(){
+function borrar_pagosrecibidos_realizados(){// eslint-disable-line no-unused-vars 
     rl.question("Ingrese id: ",id =>{
         datos.id = id;
         controlGastos.pagosrecibidos.borrar(datos);
@@ -80,7 +80,7 @@ function borrar_pagosrecibidos_realizados(){
     });
 } 
 
-function renombrar_pagosrecibidos_realizados(){
+function renombrar_pagosrecibidos_realizados(){// eslint-disable-line no-unused-vars 
     rl.question("Ingrese id: ",id =>{
         rl.question("Ingrese mes: ",mes =>{
             rl.question("Ingrese ano: ",ano =>{
