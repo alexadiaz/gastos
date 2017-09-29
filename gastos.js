@@ -216,29 +216,6 @@ function renombrarPagos(info,datos){
     }
 }
 
-function renombrarPagos(info,datos){
-    if(datos.id !== "" && datos.mes !== "" && datos.ano !== "" && datos.nombre !== "" && datos.valor !== ""){
-        db.one(`select id from ${info.tablaConsultar} where id = $1`,datos.id)
-            .then(idRenombrar => {
-                db.one("select id from periodos where mes=$[mes] and ano=$[ano]",datos)
-                    .then(periodoid =>{
-                        db.one(`select id from ${info.tabla} where nombre = $1`, datos.nombre)
-                            .then((id) =>{
-                                db.none(`update ${info.tablaConsultar} set periodoid = $1,${info.campo} = $2,valor = $3 where id = $4`,[periodoid.id,id.id,datos.valor,idRenombrar.id])
-                                    .then(()=> "Pago renombrado")
-                                    .catch(()=> "Valor no es valido");
-                            })
-                            .catch(() => console.log("Nombre no existe"));
-                    }).then(mensaje => console.log(mensaje))
-                    .catch(()=> console.log("Periodo no existe"));
-            })
-            .catch(()=> console.log("id no existe"));
-    }
-    else{
-        console.log("Debe ingresar id, mes, ano, nombre y valor");
-    }
-}
-
 function consultarPagosRecibidos(){
     db.any("select pr.id,pe.mes,pe.ano,i.nombre,pr.valor from pagosrecibidos pr join periodos pe on pr.periodoid= pe.id join ingresos i on pr.ingresoid=i.id")
         .then(result => console.log(result));
