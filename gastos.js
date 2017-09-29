@@ -55,9 +55,9 @@ let controlGastos = {
 
 function insertar(tabla,datos){
     if (datos.nombre !== ""){
-        db.oneOrNone(`select nombre from ${tabla} where nombre = $1`,datos.nombre)
-        .then((nombre)=>{
-            return nombre !== null ? true :  db.none(`insert into ${tabla} (nombre) values ($1)`,datos.nombre);
+        db.oneOrNone(`select id from ${tabla} where nombre = $1`,datos.nombre)
+        .then((id)=>{
+            return id !== null ? true :  db.none(`insert into ${tabla} (nombre) values ($1)`,datos.nombre);
         })
         .then(result => result ? console.log("Nombre ya existe") : console.log("Nombre insertado"));
     }
