@@ -10,6 +10,9 @@ module.exports = {
         "sourceType": "module"
     },
     "rules": {
+        "no-console":[
+            "off"
+        ],
         "linebreak-style": [
             "error",
             "windows"
