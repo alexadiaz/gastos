@@ -132,13 +132,15 @@ function consultar(tabla){
 }
 
 function insertarPeriodos(datos){
-    if (datos.mes !== "" && datos.ano !== ""){
-        db.none("insert into periodos (mes,ano) values ($[mes],$[ano])",datos)
-            .then(()=> console.log("Periodo ingresado"))
-            .catch(()=> console.log("Periodo no valido o ya existe"));
+    if (datos.mes !== "" && datos.ano !== "" && /^([0-9])*$/.test(datos.mes) && /^([0-9])*$/.test(datos.ano)){
+        db.oneOrNone("select id from periodos where mes = $[mes] and ano = $[ano]",datos)
+            .then(id=>{
+                return id !== null ? true : db.none("insert into periodos (mes,ano) values ($[mes],$[ano])",datos);
+            })
+            .then(result => result ? console.log("Periodo ya existe") : console.log("Periodo ingresado"));
     }
     else{
-        console.log("Debe ingresar mes y ano");
+        console.log("Debe ingresar mes y ano valido");
     }
 }
 
