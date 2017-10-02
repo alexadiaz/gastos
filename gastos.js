@@ -69,10 +69,7 @@ function insertar(tabla,datos){
 function borrar(tabla,datos){
     db.oneOrNone(`select id from ${tabla} where nombre = $1`, datos.nombre)
         .then((id) => {
-            if (id ===  null){
-                return true;
-            }
-            return db.one(`select count(id) from ${info.tablaConsultar} where ${info.campo} = $1`,id.id, c => parseInt(c.count, 10));
+            return id ===  null ? true : db.one(`select count(id) from ${info.tablaConsultar} where ${info.campo} = $1`,id.id, c => parseInt(c.count, 10));
         })
         .then(result => {
             if(result === true){
