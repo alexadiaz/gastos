@@ -124,7 +124,7 @@ function consultar(tabla){
 }
 
 function insertarPeriodos(datos){
-    if (datos.mes !== "" && datos.ano !== "" && /^([0-9])*$/.test(datos.mes) && /^([0-9])*$/.test(datos.ano)){
+    if (validarDatos(datos.mes) && validarDatos(datos.ano)){
         db.oneOrNone("select id from periodos where mes = $[mes] and ano = $[ano]",datos)
             .then(id=>{
                 return id !== null ? true : db.none("insert into periodos (mes,ano) values ($[mes],$[ano])",datos);
@@ -136,6 +136,9 @@ function insertarPeriodos(datos){
     }
 }
 
+function validarDatos(campo){
+    return campo !== "" && /^([0-9])*$/.test(campo) 
+}
 function borrarPeriodos(datos){
     db.one("select id from periodos where mes=$[mes] and ano=$[ano]",datos)
         .then(() =>{
