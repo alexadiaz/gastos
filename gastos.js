@@ -72,19 +72,14 @@ function borrar(tabla,datos){
             if (id ===  null){
                 return true;
             }
-            let q1 = db.one("select count(id) from pagosrecibidos where id = $1", id.id, c => parseInt(c.count,10));
-            let q2 = db.one("select count(id) from pagosrealizados where id = $1",id.id, c => parseInt(c.count,10));
-            return Promise.all([q1, q2]);
+            return db.one(`select count(id) from ${info.tablaConsultar} where ${info.campo} = $1`,id.id, c => parseInt(c.count, 10));
         })
         .then(result => {
             if(result === true){
                 return "Nombre no existe";
             } 
-            if(result[0] !== 0){
-                return "Nombre esta siendo usado en pagos recibidos";
-            }
-            if(result[1] !== 0){
-                return "Nombre esta siendo usado en pagos realizados";
+            if(result !== 0){
+                return "Nombre esta siendo usado en pagos recibidos y/o realizados";
             }
             return db.none(`delete from ${tabla} where nombre = $1`, datos.nombre)
                     .then(()=> "Nombre borrado");
