@@ -254,23 +254,28 @@ function borrarPagos(tabla,datos){
 }
 
 function renombrarPagos(info,datos){
-    if(datos.id !== "" && datos.mes !== "" && datos.ano !== "" && datos.nombre !== "" && datos.valor !== ""){
-        db.one(`select id from ${info.tablaConsultar} where id = $1`,datos.id)
-            .then(() => {
+    if(validarDatos(datos.id)){
+        db.oneOrNone(`select id from ${info.tablaConsultar} where id = $1`,datos.id)
+            .then(id =>{
+                if(id === null){
+                    return true;
+                }
                 return pagos(info,datos);
             })
             .then(result =>{
-                if (result){
-                    return db.none(`update ${info.tablaConsultar} set periodoid = $1,${info.campo} = $2,valor = $3 where id = $4`,[result[0].id,result[1].id,datos.valor,datos.id])
-                            .then(()=> "Pago renombrado")
-                            .catch(()=> "Valor no es valido");
+                if(result === true){
+                    return "id no existe";
                 }
+                if(result === "Periodo no existe" || result === "Nombre no existe"){
                 return result;
-            }).then(mensaje => console.log(mensaje))
-            .catch(()=> console.log("id no existe"));
+                }
+                return db.none(`update ${info.tablaConsultar} set periodoid = $1,${info.campo} = $2,valor = $3 where id = $4`,[result[0].id,result[1].id,datos.valor,datos.id])
+                    .then(()=> "Pago renombrado");
+            })
+            .then(mensaje => console.log(mensaje));
     }
     else{
-        console.log("Debe ingresar id, mes, ano, nombre y valor");
+        console.log("Debe ingresar id valido");
     }
 }
 
