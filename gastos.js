@@ -23,7 +23,7 @@ let ingresos ={
 let controlGastos = {
     gastos:{
         insertar: (datos) => insertar("gastos",datos),
-        borrar: (datos) => borrar("gastos",datos),
+        borrar: (datos) => borrar(gastos,datos),
         renombrar: (datos) => renombrar(gastos,datos),
         consultar: () => consultar("gastos")
     },
@@ -66,8 +66,8 @@ function insertar(tabla,datos){
     }
 }
 
-function borrar(tabla,datos){
-    db.oneOrNone(`select id from ${tabla} where nombre = $1`, datos.nombre)
+function borrar(info,datos){
+    db.oneOrNone(`select id from ${info.tabla} where nombre = $1`, datos.nombre)
         .then((id) => {
             return id ===  null ? true : db.one(`select count(id) from ${info.tablaConsultar} where ${info.campo} = $1`,id.id, c => parseInt(c.count, 10));
         })
@@ -78,7 +78,7 @@ function borrar(tabla,datos){
             if(result !== 0){
                 return "Nombre esta siendo usado en pagos recibidos y/o realizados";
             }
-            return db.none(`delete from ${tabla} where nombre = $1`, datos.nombre)
+            return db.none(`delete from ${info.tabla} where nombre = $1`, datos.nombre)
                     .then(()=> "Nombre borrado");
         })
         .then(mensaje => console.log(mensaje));
