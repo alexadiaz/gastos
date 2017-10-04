@@ -141,18 +141,17 @@ function validarDatos(campo){
 }
 
 function borrarPeriodos(datos){
-    db.one("select id from periodos where mes=$[mes] and ano=$[ano]",datos)
-        .then(() =>{
-            db.none("delete from periodos where mes = $[mes] and ano = $[ano]",datos)
-                .then(()=> console.log ("Periodo borrado"))
-                .catch(() => console.log ("Periodo esta siendo usado en pagos realizados y/o recibidos"));
+    validarDatosUsados(datos)
+        .then(result =>{
+             if(result !== "ok"){
+                return result;
+            }
+            return db.none("delete from periodos where mes = $[mes] and ano = $[ano]",datos)
+                .then(()=> "Periodo borrado");
         })
-        .catch(() => console.log("Periodo no existe"));
+        .then(mensaje =>console.log(mensaje));
 }
 
-function renombrarPeriodos(datos){
-    if(datos.nuevoMes !== "" && datos.nuevoAno !== ""){
-        db.one("select id from periodos where mes=$[mes] and ano=$[ano]",datos)
 function validarDatosUsados(datos){
     return new Promise (resolve => {
         if (validarDatos(datos.mes) && validarDatos(datos.ano)){
