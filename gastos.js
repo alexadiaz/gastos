@@ -230,15 +230,18 @@ function insertarPagos(info,datos){
 }
 
 function pagos(info,datos){
+    return new Promise(resolve =>{
+        if (validarDatos(datos.mes) && validarDatos(datos.ano) && datos.nombre !== "" && validarDatos(datos.valor)){
     let q1 = db.oneOrNone("select id from periodos where mes=$[mes] and ano=$[ano]",datos);
     let q2 = db.oneOrNone(`select id from ${info.tabla} where nombre = $1`, datos.nombre);
     return Promise.all([q1,q2])
         .then(result =>{
             if(result[0] === null){
-                return "Periodo no existe";
+                        resolve ("Periodo no existe");
+                        return;
             }
             if(result[1] === null){
-                return "Nombre no existe";
+                        resolve("Nombre no existe");
             }
             return true;
         });
