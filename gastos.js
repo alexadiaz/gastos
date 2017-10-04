@@ -153,18 +153,39 @@ function borrarPeriodos(datos){
 function renombrarPeriodos(datos){
     if(datos.nuevoMes !== "" && datos.nuevoAno !== ""){
         db.one("select id from periodos where mes=$[mes] and ano=$[ano]",datos)
+function validarDatosUsados(datos){
+    return new Promise (resolve => {
+        if (validarDatos(datos.mes) && validarDatos(datos.ano)){
+            db.oneOrNone("select id from periodos where mes=$[mes] and ano=$[ano]",datos)
             .then((id) =>{
+                    if(id === null){
+                        return true;
+                    }
                 let q1 = db.one("select count(id) from pagosrecibidos where periodoid = $1", id.id, c => parseInt(c.count,10));
                 let q2 = db.one("select count(id) from pagosrealizados where periodoid = $1",id.id, c => parseInt(c.count,10));
                 return Promise.all([q1, q2]);
             })
             .then(result => {
+                    if(result === true){
+                        resolve ("Periodo no existe");
+                        return;
+                    }
                 if(result[0] !== 0){
-                return "Periodo esta siendo usado en pagos recibidos";
+                        resolve ("Periodo esta siendo usado en pagos recibidos");
+                        return;
                 }
                 if(result[1] !== 0){
-                    return "Periodo esta siendo usado en pagos realizados";
+                        resolve ("Periodo esta siendo usado en pagos realizados");
+                        return;
                 }
+                    resolve ("ok");
+                });
+        }
+        else{
+            resolve ("Debe ingresar mes y ano valido");
+        }
+    });
+}
                 return db.none("update periodos set mes = $[nuevoMes],ano = $[nuevoAno] where mes = $[mes] and ano = $[ano]",datos)
                         .then(()=> "Periodo renombrado")
                         .catch(()=> "Periodo ya existe");
