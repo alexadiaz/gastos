@@ -212,39 +212,39 @@ function consultarPeriodos(){
 }
 
 function insertarPagos(info,datos){
-    if (datos.mes !== "" && datos.ano !== "" && datos.nombre !== "" && datos.valor !== ""){
-        pagos(info,datos)
-            .then(result =>{
-                if (result){
-                    return db.none(`insert into ${info.tablaConsultar} (periodoid,${info.campo},valor) values ($1,$2,$3)`,[result[0].id,result[1].id,datos.valor])
-                        .then(()=> "Pago ingresado")
-                        .catch(()=> "Valor no es valido");
-                }
+    pagos(info,datos)
+        .then(result =>{
+            if(result === "Periodo no existe" || result === "Nombre no existe"){
                 return result;
-            })
-            .then(mensaje => console.log(mensaje));
-    }
-    else{
-        console.log("Debe ingresar mes, ano, nombre y valor");
-    }
+            }
+            return db.none(`insert into ${info.tablaConsultar} (periodoid,${info.campo},valor) values ($1,$2,$3)`,[result[0].id,result[1].id,datos.valor])
+                .then(()=> "Pago ingresado");
+        })
+        .then(mensaje => console.log(mensaje));
 }
 
 function pagos(info,datos){
     return new Promise(resolve =>{
         if (validarDatos(datos.mes) && validarDatos(datos.ano) && datos.nombre !== "" && validarDatos(datos.valor)){
-    let q1 = db.oneOrNone("select id from periodos where mes=$[mes] and ano=$[ano]",datos);
-    let q2 = db.oneOrNone(`select id from ${info.tabla} where nombre = $1`, datos.nombre);
-    return Promise.all([q1,q2])
-        .then(result =>{
-            if(result[0] === null){
+            let q1 = db.oneOrNone("select id from periodos where mes=$[mes] and ano=$[ano]",datos);
+            let q2 = db.oneOrNone(`select id from ${info.tabla} where nombre = $1`, datos.nombre);
+            return Promise.all([q1,q2])
+                .then(result =>{
+                    if(result[0] === null){
                         resolve ("Periodo no existe");
                         return;
-            }
-            if(result[1] === null){
+                    }
+                    if(result[1] === null){
                         resolve("Nombre no existe");
-            }
-            return true;
-        });
+                        return;
+                    }
+                    resolve (result);
+                });
+        }
+        else{
+            console.log("Debe ingresar datos validos");
+        }
+    });
 }
 
 function borrarPagos(tabla,datos){
@@ -270,7 +270,7 @@ function renombrarPagos(info,datos){
                     return "id no existe";
                 }
                 if(result === "Periodo no existe" || result === "Nombre no existe"){
-                return result;
+                    return result;
                 }
                 return db.none(`update ${info.tablaConsultar} set periodoid = $1,${info.campo} = $2,valor = $3 where id = $4`,[result[0].id,result[1].id,datos.valor,datos.id])
                     .then(()=> "Pago renombrado");
