@@ -248,12 +248,20 @@ function pagos(info,datos){
 }
 
 function borrarPagos(tabla,datos){
-    db.one(`select id from ${tabla} where id = $1`,datos.id)
-        .then(id => {
-            return db.none(`delete from ${tabla} where id = $1`,id.id);
-        })
-        .then(()=> console.log ("Pago borrado"))
-        .catch(()=> console.log("id no existe"));
+    if(validarDatos(datos.id)){
+        db.oneOrNone(`select id from ${tabla} where id = $1`,datos.id)
+            .then(id =>{
+                if(id === null){
+                    return "id no existe"; 
+                }
+                return db.none(`delete from ${tabla} where id = $1`,id.id)
+                    .then(()=> "Pago borrado");
+            })   
+            .then((mensaje)=> console.log (mensaje));
+    }
+    else{
+        console.log("Debe ingresar id valido");
+    }
 }
 
 function renombrarPagos(info,datos){
