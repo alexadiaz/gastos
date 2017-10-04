@@ -137,8 +137,9 @@ function insertarPeriodos(datos){
 }
 
 function validarDatos(campo){
-    return campo !== "" && /^([0-9])*$/.test(campo) 
+    return campo !== "" && /^([0-9])*$/.test(campo);
 }
+
 function borrarPeriodos(datos){
     db.one("select id from periodos where mes=$[mes] and ano=$[ano]",datos)
         .then(() =>{
