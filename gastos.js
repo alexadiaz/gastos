@@ -132,7 +132,7 @@ function insertarPeriodos(datos){
             .then(result => result ? console.log("Periodo ya existe") : console.log("Periodo ingresado"));
     }
     else{
-        console.log("Debe ingresar mes y ano valido");
+        console.log("Debe ingresar datos validos");
     }
 }
 
@@ -181,13 +181,10 @@ function validarDatosUsados(datos){
                 });
         }
         else{
-            resolve ("Debe ingresar mes y ano valido");
+            resolve ("Debe ingresar datos validos");
         }
     });
 }
-                return db.none("update periodos set mes = $[nuevoMes],ano = $[nuevoAno] where mes = $[mes] and ano = $[ano]",datos)
-                        .then(()=> "Periodo renombrado")
-                        .catch(()=> "Periodo ya existe");
             })     
             .then(mensaje => console.log(mensaje))
             .catch(() => console.log("Periodo no existe"));
