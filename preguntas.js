@@ -91,7 +91,7 @@ function renombrar_pagosrecibidos_realizados(){// eslint-disable-line no-unused-
                         datos.ano = ano;
                         datos.nombre = nombre;
                         datos.valor = valor;
-                        controlGastos.pagosrecibidos.borrar(datos);
+                        controlGastos.pagosrecibidos.renombrar(datos);
                         rl.close();
                     });
                 });      
