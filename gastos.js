@@ -103,12 +103,15 @@ function renombrar(info,datos){
                 .then(result =>{
                     if (result === true){
                         resolve ("Nombre no existe");
+                        return;
                     }
                     if (result === false){
                         resolve ("Nombre ya existe");
+                        return;
                     }
                     if(result !== 0){
                         resolve ("Nombre esta siendo usado en pagos realizados y/o recibidos");
+                        return;
                     }
                     db.none(`update ${info.tabla} set nombre = $[nuevoNombre] where nombre = $[nombre]`, datos)
                             .then(()=> resolve ("Nombre renombrado"));
