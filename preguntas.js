@@ -100,8 +100,11 @@ function insertar_pagosrecibidos_realizados(){// eslint-disable-line no-unused-v
 function borrar_pagosrecibidos_realizados(){// eslint-disable-line no-unused-vars 
     rl.question("Ingrese id: ",id =>{
         datos.id = id;
-        controlGastos.pagosrecibidos.borrar(datos);
-        rl.close();
+        controlGastos.pagosrecibidos.borrar(datos)
+            .then(mensaje => {
+                console.log(mensaje);
+                rl.close();
+            });
     });
 } 
 
