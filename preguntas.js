@@ -50,8 +50,11 @@ function renombrar_periodos(){// eslint-disable-line no-unused-vars
                     datos.ano = ano;
                     datos.nuevoMes = nuevoMes;
                     datos.nuevoAno = nuevoAno;
-                    controlGastos.periodos.renombrar(datos);
-                    rl.close();
+                    controlGastos.periodos.renombrar(datos)
+                        .then(mensaje => {
+                            console.log(mensaje);
+                            rl.close();
+                        });
                 });
             });
         });

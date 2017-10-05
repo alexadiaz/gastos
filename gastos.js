@@ -188,23 +188,26 @@ function validarDatosUsados(datos){
 }
 
 function renombrarPeriodos(datos){
-    if(validarDatos(datos.nuevoMes) && validarDatos(datos.nuevoAno)){
-        validarDatosUsados(datos)
-            .then(result =>{
-                if(result !== "ok"){
-                    return result;
-                }
-                return db.oneOrNone("select id from periodos where mes=$[nuevoMes] and ano=$[nuevoAno]",datos)
-                    .then(id =>{
-                        return id !== null ? true : db.none("update periodos set mes = $[nuevoMes],ano = $[nuevoAno] where mes = $[mes] and ano = $[ano]",datos);
-                    })
-                    .then(mensaje => mensaje ? "Periodo ya existe" : "Periodo renombrado");
-            })
-            .then(mensaje =>console.log(mensaje));
-    }
-    else{
-        console.log("Debe ingresar datos validos");
-    }
+    return new Promise(resolve => {
+        if(validarDatos(datos.nuevoMes) && validarDatos(datos.nuevoAno)){
+            validarDatosUsados(datos)
+                .then(result =>{
+                    if(result !== "ok"){
+                        resolve (result);
+                        return;
+                    }
+                    db.oneOrNone("select id from periodos where mes=$[nuevoMes] and ano=$[nuevoAno]",datos)
+                        .then(id =>{
+                            return id !== null ? true : db.none("update periodos set mes = $[nuevoMes],ano = $[nuevoAno] where mes = $[mes] and ano = $[ano]",datos);
+                        })
+                        .then(mensaje => mensaje ? resolve("Periodo ya existe") : resolve("Periodo renombrado"));
+                });
+        }
+        else{
+            resolve ("Debe ingresar datos validos");
+        }
+    });
+    
 }
                     
 function consultarPeriodos(){
