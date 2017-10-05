@@ -61,6 +61,11 @@ function renombrar_periodos(){// eslint-disable-line no-unused-vars
     });
 }
 
+function consultar_periodos(){// eslint-disable-line no-unused-vars
+    controlGastos.periodos.consultar()
+        .then(result => console.log(result));
+}
+
 function insertar_pagosrecibidos_realizados(){// eslint-disable-line no-unused-vars 
     rl.question("Ingrese mes: ",mes =>{
         rl.question("Ingrese ano: ",ano =>{

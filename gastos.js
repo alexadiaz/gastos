@@ -211,8 +211,7 @@ function renombrarPeriodos(datos){
 }
                     
 function consultarPeriodos(){
-    db.any("select mes,ano from periodos")
-        .then(result => console.log(result));
+    return db.any("select mes,ano from periodos");
 }
 
 function insertarPagos(info,datos){
