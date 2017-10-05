@@ -24,10 +24,15 @@ function renombrar_gastos_ingresos(){// eslint-disable-line no-unused-vars
         rl.question("Ingrese nuevo nombre: ",nuevoNombre =>{
             datos.nombre = nombre;
             datos.nuevoNombre = nuevoNombre;
-            controlGastos.gastos.renombrar(datos);
-            rl.close();
+            controlGastos.gastos.renombrar(datos)
+                .then(mensaje => {
+                    console.log(mensaje);
+                    rl.close();
+                });
         });
     });
+}
+
 function consultar_gastos_ingresos(){// eslint-disable-line no-unused-vars 
     controlGastos.gastos.consultar()
         .then(result => console.log(result)); 

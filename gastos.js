@@ -86,37 +86,38 @@ function borrar(info,datos){
 }    
 
 function renombrar(info,datos){
-    if (datos.nombre && datos.nuevoNombre !== ""){
-        let q1 = db.oneOrNone(`select id from ${info.tabla} where nombre = $[nombre]`, datos);      
-        let q2 = db.oneOrNone(`select id from ${info.tabla} where nombre = $[nuevoNombre]`, datos);
-        return Promise.all([q1,q2])
-            .then(id =>{
-                if(id[0] === null){
-                    return true;
-                }
-                if(id[1] !== null){
-                    return false;
-                }
-                return db.one(`select count(id) from ${info.tablaConsultar} where ${info.campo} = $1`,id[0].id, c => parseInt(c.count, 10));
-            })
-            .then(result =>{
-                if (result === true){
-                    return "Nombre no existe";
-                }
-                if (result === false){
-                    return "Nombre ya existe";
-                }
-                if(result !== 0){
-                    return "Nombre esta siendo usado en pagos realizados y/o recibidos";
-                }
-                return db.none(`update ${info.tabla} set nombre = $[nuevoNombre] where nombre = $[nombre]`, datos)
-                        .then(()=> "Nombre renombrado");
-            })
-            .then(mensaje => console.log(mensaje));
-    }
-    else{
-        console.log("Debe ingresar nombre y nuevo nombre");
-    }
+    return new Promise(resolve =>{
+        if (datos.nombre && datos.nuevoNombre !== ""){
+            let q1 = db.oneOrNone(`select id from ${info.tabla} where nombre = $[nombre]`, datos);      
+            let q2 = db.oneOrNone(`select id from ${info.tabla} where nombre = $[nuevoNombre]`, datos);
+            return Promise.all([q1,q2])
+                .then(id =>{
+                    if(id[0] === null){
+                        return true;
+                    }
+                    if(id[1] !== null){
+                        return false;
+                    }
+                    return db.one(`select count(id) from ${info.tablaConsultar} where ${info.campo} = $1`,id[0].id, c => parseInt(c.count, 10));
+                })
+                .then(result =>{
+                    if (result === true){
+                        resolve ("Nombre no existe");
+                    }
+                    if (result === false){
+                        resolve ("Nombre ya existe");
+                    }
+                    if(result !== 0){
+                        resolve ("Nombre esta siendo usado en pagos realizados y/o recibidos");
+                    }
+                    db.none(`update ${info.tabla} set nombre = $[nuevoNombre] where nombre = $[nombre]`, datos)
+                            .then(()=> resolve ("Nombre renombrado"));
+                });
+        }
+        else{
+            resolve("Debe ingresar nombre y nuevo nombre");
+        }
+    });
 }
 
 function consultar(tabla){
