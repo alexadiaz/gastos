@@ -119,8 +119,11 @@ function renombrar_pagosrecibidos_realizados(){// eslint-disable-line no-unused-
                         datos.ano = ano;
                         datos.nombre = nombre;
                         datos.valor = valor;
-                        controlGastos.pagosrecibidos.renombrar(datos);
-                        rl.close();
+                        controlGastos.pagosrecibidos.renombrar(datos)
+                            .then(mensaje => {
+                                console.log(mensaje);
+                                rl.close();
+                            });
                     });
                 });      
             });
