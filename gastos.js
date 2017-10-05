@@ -181,15 +181,14 @@ function consultarPeriodos(){
 }
 
 function insertarPagos(info,datos){
-    pagos(info,datos)
+    return pagos(info,datos)
         .then(result =>{
             if(result === "Periodo no existe" || result === "Nombre no existe"){
                 return result;
             }
             return db.none(`insert into ${info.tablaConsultar} (periodoid,${info.campo},valor) values ($1,$2,$3)`,[result[0].id,result[1].id,datos.valor])
                 .then(()=> "Pago ingresado");
-        })
-        .then(mensaje => console.log(mensaje));
+        });
 }
 
 function borrarPagos(tabla,datos){
@@ -302,7 +301,7 @@ function pagos(info,datos){
                 });
         }
         else{
-            console.log("Debe ingresar datos validos");
+            resolve("Debe ingresar datos validos");
         }
     });
 }

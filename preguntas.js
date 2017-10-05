@@ -86,8 +86,11 @@ function insertar_pagosrecibidos_realizados(){// eslint-disable-line no-unused-v
                     datos.ano = ano;
                     datos.nombre = nombre;
                     datos.valor = valor;
-                    controlGastos.pagosrecibidos.insertar(datos);
-                    rl.close();
+                    controlGastos.pagosrecibidos.insertar(datos)
+                        .then(mensaje => {
+                            console.log(mensaje);
+                            rl.close();
+                        });
                 });
             });
         });
