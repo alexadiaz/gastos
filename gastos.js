@@ -139,10 +139,6 @@ function insertarPeriodos(datos){
     });
 }
 
-function validarDatos(campo){
-    return campo !== "" && /^([0-9])*$/.test(campo);
-}
-
 function borrarPeriodos(datos){
     return validarDatosUsados(datos)
         .then(result =>{
@@ -152,40 +148,6 @@ function borrarPeriodos(datos){
             return db.none("delete from periodos where mes = $[mes] and ano = $[ano]",datos)
                 .then(()=> "Periodo borrado");
         });
-}
-
-function validarDatosUsados(datos){
-    return new Promise (resolve => {
-        if (validarDatos(datos.mes) && validarDatos(datos.ano)){
-            db.oneOrNone("select id from periodos where mes=$[mes] and ano=$[ano]",datos)
-                .then((id) =>{
-                    if(id === null){
-                        return true;
-                    }
-                    let q1 = db.one("select count(id) from pagosrecibidos where periodoid = $1", id.id, c => parseInt(c.count,10));
-                    let q2 = db.one("select count(id) from pagosrealizados where periodoid = $1",id.id, c => parseInt(c.count,10));
-                    return Promise.all([q1, q2]);
-                })
-                .then(result => {
-                    if(result === true){
-                        resolve ("Periodo no existe");
-                        return;
-                    }
-                    if(result[0] !== 0){
-                        resolve ("Periodo esta siendo usado en pagos recibidos");
-                        return;
-                    }
-                    if(result[1] !== 0){
-                        resolve ("Periodo esta siendo usado en pagos realizados");
-                        return;
-                    }
-                    resolve ("ok");
-                });
-        }
-        else{
-            resolve ("Debe ingresar datos validos");
-        }
-    });
 }
 
 function renombrarPeriodos(datos){
@@ -225,30 +187,6 @@ function insertarPagos(info,datos){
                 .then(()=> "Pago ingresado");
         })
         .then(mensaje => console.log(mensaje));
-}
-
-function pagos(info,datos){
-    return new Promise(resolve =>{
-        if (validarDatos(datos.mes) && validarDatos(datos.ano) && datos.nombre !== "" && validarDatos(datos.valor)){
-            let q1 = db.oneOrNone("select id from periodos where mes=$[mes] and ano=$[ano]",datos);
-            let q2 = db.oneOrNone(`select id from ${info.tabla} where nombre = $1`, datos.nombre);
-            return Promise.all([q1,q2])
-                .then(result =>{
-                    if(result[0] === null){
-                        resolve ("Periodo no existe");
-                        return;
-                    }
-                    if(result[1] === null){
-                        resolve("Nombre no existe");
-                        return;
-                    }
-                    resolve (result);
-                });
-        }
-        else{
-            console.log("Debe ingresar datos validos");
-        }
-    });
 }
 
 function borrarPagos(tabla,datos){
@@ -302,6 +240,68 @@ function consultarPagosRecibidos(){
 function consultarPagosRealizados(){
     db.any("select pr.id,pe.mes,pe.ano,ga.nombre,pr.valor from pagosrealizados pr join periodos pe on pr.periodoid= pe.id join gastos ga on pr.gastosid=ga.id")
         .then(result => console.log(result));
+}
+
+function validarDatos(campo){
+    return campo !== "" && /^([0-9])*$/.test(campo);
+}
+
+function validarDatosUsados(datos){
+    return new Promise (resolve => {
+        if (validarDatos(datos.mes) && validarDatos(datos.ano)){
+            db.oneOrNone("select id from periodos where mes=$[mes] and ano=$[ano]",datos)
+                .then((id) =>{
+                    if(id === null){
+                        return true;
+                    }
+                    let q1 = db.one("select count(id) from pagosrecibidos where periodoid = $1", id.id, c => parseInt(c.count,10));
+                    let q2 = db.one("select count(id) from pagosrealizados where periodoid = $1",id.id, c => parseInt(c.count,10));
+                    return Promise.all([q1, q2]);
+                })
+                .then(result => {
+                    if(result === true){
+                        resolve ("Periodo no existe");
+                        return;
+                    }
+                    if(result[0] !== 0){
+                        resolve ("Periodo esta siendo usado en pagos recibidos");
+                        return;
+                    }
+                    if(result[1] !== 0){
+                        resolve ("Periodo esta siendo usado en pagos realizados");
+                        return;
+                    }
+                    resolve ("ok");
+                });
+        }
+        else{
+            resolve ("Debe ingresar datos validos");
+        }
+    });
+}
+
+function pagos(info,datos){
+    return new Promise(resolve =>{
+        if (validarDatos(datos.mes) && validarDatos(datos.ano) && datos.nombre !== "" && validarDatos(datos.valor)){
+            let q1 = db.oneOrNone("select id from periodos where mes=$[mes] and ano=$[ano]",datos);
+            let q2 = db.oneOrNone(`select id from ${info.tabla} where nombre = $1`, datos.nombre);
+            return Promise.all([q1,q2])
+                .then(result =>{
+                    if(result[0] === null){
+                        resolve ("Periodo no existe");
+                        return;
+                    }
+                    if(result[1] === null){
+                        resolve("Nombre no existe");
+                        return;
+                    }
+                    resolve (result);
+                });
+        }
+        else{
+            console.log("Debe ingresar datos validos");
+        }
+    });
 }
 
 module.exports = controlGastos;
