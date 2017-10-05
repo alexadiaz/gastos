@@ -120,8 +120,7 @@ function renombrar(info,datos){
 }
 
 function consultar(tabla){
-    db.any(`select nombre from ${tabla}`)
-        .then(result => console.log(result));
+    return db.any(`select nombre from ${tabla}`);
 }
 
 function insertarPeriodos(datos){

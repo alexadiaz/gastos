@@ -28,6 +28,9 @@ function renombrar_gastos_ingresos(){// eslint-disable-line no-unused-vars
             rl.close();
         });
     });
+function consultar_gastos_ingresos(){// eslint-disable-line no-unused-vars 
+    controlGastos.gastos.consultar()
+        .then(result => console.log(result)); 
 }
 
 function insertar_borrar_periodos(){// eslint-disable-line no-unused-vars 
