@@ -33,11 +33,6 @@ function renombrar_gastos_ingresos(){// eslint-disable-line no-unused-vars
     });
 }
 
-function consultar_gastos_ingresos(){// eslint-disable-line no-unused-vars 
-    controlGastos.gastos.consultar()
-        .then(result => console.log(result)); 
-}
-
 function insertar_borrar_periodos(){// eslint-disable-line no-unused-vars 
     rl.question("Ingrese mes: ",mes =>{
         rl.question("Ingrese ano: ",ano =>{
@@ -70,11 +65,6 @@ function renombrar_periodos(){// eslint-disable-line no-unused-vars
             });
         });
     });
-}
-
-function consultar_periodos(){// eslint-disable-line no-unused-vars
-    controlGastos.periodos.consultar()
-        .then(result => console.log(result));
 }
 
 function insertar_pagosrecibidos_realizados(){// eslint-disable-line no-unused-vars 
@@ -130,3 +120,8 @@ function renombrar_pagosrecibidos_realizados(){// eslint-disable-line no-unused-
         });
     });
 } 
+
+function consultar(){// eslint-disable-line no-unused-vars
+    controlGastos.gastos.consultar()
+        .then(result => console.log(result));
+}
