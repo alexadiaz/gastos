@@ -11,8 +11,11 @@ let datos={};
 function insertar_borrar_gastos_ingresos(){// eslint-disable-line no-unused-vars 
     rl.question("Ingrese nombre: ",nombre =>{
         datos.nombre = nombre;
-        controlGastos.gastos.insertar(datos);
-        rl.close();
+        controlGastos.gastos.insertar(datos)
+            .then(mensaje => {
+                console.log(mensaje);
+                rl.close();
+            });
     });
 }
 

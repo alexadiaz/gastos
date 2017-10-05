@@ -54,20 +54,22 @@ let controlGastos = {
 };
 
 function insertar(tabla,datos){
-    if (datos.nombre !== ""){
-        db.oneOrNone(`select id from ${tabla} where nombre = $1`,datos.nombre)
-            .then((id)=>{
-                return id !== null ? true :  db.none(`insert into ${tabla} (nombre) values ($1)`,datos.nombre);
-            })
-            .then(result => result ? console.log("Nombre ya existe") : console.log("Nombre insertado"));
-    }
-    else{
-        console.log("Debe ingresar un nombre");
-    }
+    return new Promise(resolve =>{
+        if (datos.nombre !== ""){
+            db.oneOrNone(`select id from ${tabla} where nombre = $1`,datos.nombre)
+                .then((id)=>{
+                    return id !== null ? true :  db.none(`insert into ${tabla} (nombre) values ($1)`,datos.nombre);
+                })
+                .then(result => result ? resolve("Nombre ya existe") : resolve("Nombre insertado"));
+        }
+        else{
+            resolve ("Debe ingresar un nombre");
+        }
+    });
 }
 
 function borrar(info,datos){
-    db.oneOrNone(`select id from ${info.tabla} where nombre = $1`, datos.nombre)
+    return db.oneOrNone(`select id from ${info.tabla} where nombre = $1`, datos.nombre)
         .then((id) => {
             return id ===  null ? true : db.one(`select count(id) from ${info.tablaConsultar} where ${info.campo} = $1`,id.id, c => parseInt(c.count, 10));
         })
@@ -80,8 +82,7 @@ function borrar(info,datos){
             }
             return db.none(`delete from ${info.tabla} where nombre = $1`, datos.nombre)
                     .then(()=> "Nombre borrado");
-        })
-        .then(mensaje => console.log(mensaje));
+        });
 }    
 
 function renombrar(info,datos){
