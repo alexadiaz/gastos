@@ -8,14 +8,24 @@ const rl = readline.createInterface({
 
 let datos={};
 
+let errores ={// eslint-disable-line no-unused-vars
+    1: "Datos en blanco o no validos",
+    2: "Registro ya existe",
+    3: "Registro no existe",
+    4: "Nombre usado en pagos recibidos y/o realizados",
+    5: "Nombre usado en pagos recibidos",
+    6: "Nombre usado en pagos realizados"
+};
+
 function insertar_borrar_gastos_ingresos(){// eslint-disable-line no-unused-vars 
     rl.question("Ingrese nombre: ",nombre =>{
         datos.nombre = nombre;
         controlGastos.gastos.insertar(datos)
-            .then(mensaje => {
-                console.log(mensaje);
+            .then(obj => {
+                obj.resolve ? console.log("Accion realizada") : console.log("Error " + obj.error);           
                 rl.close();
-            });
+            })
+            .catch(error => console.log("Error no esperado " + error));
     });
 }
 
@@ -25,10 +35,11 @@ function renombrar_gastos_ingresos(){// eslint-disable-line no-unused-vars
             datos.nombre = nombre;
             datos.nuevoNombre = nuevoNombre;
             controlGastos.gastos.renombrar(datos)
-                .then(mensaje => {
-                    console.log(mensaje);
+                .then(obj => {
+                    obj.resolve ? console.log("Accion realizada") : console.log("Error " + obj.error);  
                     rl.close();
-                });
+                })
+                .catch(error => console.log("Error no esperado " + error));
         });
     });
 }
@@ -39,10 +50,11 @@ function insertar_borrar_periodos(){// eslint-disable-line no-unused-vars
             datos.mes = mes;
             datos.ano = ano;
             controlGastos.periodos.insertar(datos)
-                .then(mensaje => {
-                    console.log(mensaje);
+                .then(obj => {
+                    obj.resolve ? console.log("Accion realizada") : console.log("Error " + obj.error);  
                     rl.close();
-                });
+                })
+                .catch(error => console.log("Error no esperado " + error));
         });
     });
 }
@@ -57,10 +69,11 @@ function renombrar_periodos(){// eslint-disable-line no-unused-vars
                     datos.nuevoMes = nuevoMes;
                     datos.nuevoAno = nuevoAno;
                     controlGastos.periodos.renombrar(datos)
-                        .then(mensaje => {
-                            console.log(mensaje);
+                        .then(obj => {
+                            obj.resolve ? console.log("Accion realizada") : console.log("Error " + obj.error);  
                             rl.close();
-                        });
+                        })
+                        .catch(error => console.log("Error no esperado " + error));
                 });
             });
         });
@@ -77,10 +90,11 @@ function insertar_pagosrecibidos_realizados(){// eslint-disable-line no-unused-v
                     datos.nombre = nombre;
                     datos.valor = valor;
                     controlGastos.pagosrecibidos.insertar(datos)
-                        .then(mensaje => {
-                            console.log(mensaje);
+                        .then(obj => {
+                            obj.resolve ? console.log("Accion realizada") : console.log("Error " + obj.error);
                             rl.close();
-                        });
+                        })
+                        .catch(error => console.log("Error no esperado " + error));
                 });
             });
         });
@@ -91,10 +105,11 @@ function borrar_pagosrecibidos_realizados(){// eslint-disable-line no-unused-var
     rl.question("Ingrese id: ",id =>{
         datos.id = id;
         controlGastos.pagosrecibidos.borrar(datos)
-            .then(mensaje => {
-                console.log(mensaje);
+            .then(obj => {
+                obj.resolve ? console.log("Accion realizada") : console.log("Error " + obj.error);
                 rl.close();
-            });
+            })
+            .catch(error => console.log("Error no esperado " + error));
     });
 } 
 
@@ -110,10 +125,11 @@ function renombrar_pagosrecibidos_realizados(){// eslint-disable-line no-unused-
                         datos.nombre = nombre;
                         datos.valor = valor;
                         controlGastos.pagosrecibidos.renombrar(datos)
-                            .then(mensaje => {
-                                console.log(mensaje);
+                            .then(obj => {
+                                obj.resolve ? console.log("Accion realizada") : console.log("Error " + obj.error);
                                 rl.close();
-                            });
+                            })
+                            .catch(error => console.log("Error no esperado " + error));
                     });
                 });      
             });
@@ -123,5 +139,8 @@ function renombrar_pagosrecibidos_realizados(){// eslint-disable-line no-unused-
 
 function consultar(){// eslint-disable-line no-unused-vars
     controlGastos.gastos.consultar()
-        .then(result => console.log(result));
+        .then(obj => {
+            obj.totalContenido === 0 ? console.log("Sin datos") : console.log(obj.contenido,obj.totalContenido);
+        })
+        .catch(error => console.log("Error no esperado " + error));
 }
