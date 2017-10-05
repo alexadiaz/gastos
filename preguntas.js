@@ -32,8 +32,11 @@ function insertar_borrar_periodos(){// eslint-disable-line no-unused-vars
         rl.question("Ingrese ano: ",ano =>{
             datos.mes = mes;
             datos.ano = ano;
-            controlGastos.periodos.insertar(datos);
-            rl.close();
+            controlGastos.periodos.insertar(datos)
+                .then(mensaje => {
+                    console.log(mensaje);
+                    rl.close();
+                });
         });
     });
 }

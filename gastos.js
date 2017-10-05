@@ -124,16 +124,18 @@ function consultar(tabla){
 }
 
 function insertarPeriodos(datos){
-    if (validarDatos(datos.mes) && validarDatos(datos.ano)){
-        db.oneOrNone("select id from periodos where mes = $[mes] and ano = $[ano]",datos)
-            .then(id=>{
-                return id !== null ? true : db.none("insert into periodos (mes,ano) values ($[mes],$[ano])",datos);
-            })
-            .then(result => result ? console.log("Periodo ya existe") : console.log("Periodo ingresado"));
-    }
-    else{
-        console.log("Debe ingresar datos validos");
-    }
+    return new Promise(resolve =>{
+        if (validarDatos(datos.mes) && validarDatos(datos.ano)){
+            db.oneOrNone("select id from periodos where mes = $[mes] and ano = $[ano]",datos)
+                .then(id=>{
+                    return id !== null ? true : db.none("insert into periodos (mes,ano) values ($[mes],$[ano])",datos);
+                })
+                .then(result => result ? resolve("Periodo ya existe") : resolve("Periodo ingresado"));
+        }
+        else{
+            resolve("Debe ingresar datos validos");
+        }
+    });
 }
 
 function validarDatos(campo){
@@ -141,15 +143,14 @@ function validarDatos(campo){
 }
 
 function borrarPeriodos(datos){
-    validarDatosUsados(datos)
+    return validarDatosUsados(datos)
         .then(result =>{
-             if(result !== "ok"){
+            if(result !== "ok"){
                 return result;
             }
             return db.none("delete from periodos where mes = $[mes] and ano = $[ano]",datos)
                 .then(()=> "Periodo borrado");
-        })
-        .then(mensaje =>console.log(mensaje));
+        });
 }
 
 function validarDatosUsados(datos){
