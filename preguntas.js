@@ -16,7 +16,8 @@ let errores ={// eslint-disable-line no-unused-vars
     5: "Nombre usado en pagos recibidos",
     6: "Nombre usado en pagos realizados",
     7: "Periodo ya existe",
-    8: "Periodo no existe"
+    8: "Periodo no existe",
+    9: "Id no existe"
 };
 
 function insertar_borrar_gastos_ingresos(){// eslint-disable-line no-unused-vars 
