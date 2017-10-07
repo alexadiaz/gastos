@@ -10,11 +10,13 @@ let datos={};
 
 let errores ={// eslint-disable-line no-unused-vars
     1: "Datos en blanco o no validos",
-    2: "Registro ya existe",
-    3: "Registro no existe",
+    2: "Nombre ya existe",
+    3: "Nombre no existe",
     4: "Nombre usado en pagos recibidos y/o realizados",
     5: "Nombre usado en pagos recibidos",
-    6: "Nombre usado en pagos realizados"
+    6: "Nombre usado en pagos realizados",
+    7: "Periodo ya existe",
+    8: "Periodo no existe"
 };
 
 function insertar_borrar_gastos_ingresos(){// eslint-disable-line no-unused-vars 
