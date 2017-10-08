@@ -144,6 +144,7 @@ function consultar(){// eslint-disable-line no-unused-vars
     controlGastos.gastos.consultar()
         .then(obj => {
             obj.totalContenido === 0 ? console.log("Sin datos") : console.log(obj.contenido,obj.totalContenido);
+            rl.close();
         })
         .catch(error => console.log("Error no esperado " + error));
 }
