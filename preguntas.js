@@ -25,7 +25,7 @@ function insertar_borrar_gastos_ingresos(){// eslint-disable-line no-unused-vars
         datos.nombre = nombre;
         controlGastos.gastos.insertar(datos)
             .then(obj => {
-                obj.resolve ? console.log("Accion realizada") : console.log("Error " + obj.error);           
+                obj.resolve ? console.log("Accion realizada") : console.log("Error " + errores[obj.error.toString()]);
                 rl.close();
             })
             .catch(error => console.log("Error no esperado " + error));
@@ -39,7 +39,7 @@ function renombrar_gastos_ingresos(){// eslint-disable-line no-unused-vars
             datos.nuevoNombre = nuevoNombre;
             controlGastos.gastos.renombrar(datos)
                 .then(obj => {
-                    obj.resolve ? console.log("Accion realizada") : console.log("Error " + obj.error);  
+                    obj.resolve ? console.log("Accion realizada") : console.log("Error " + errores[obj.error.toString()]);  
                     rl.close();
                 })
                 .catch(error => console.log("Error no esperado " + error));
@@ -54,7 +54,7 @@ function insertar_borrar_periodos(){// eslint-disable-line no-unused-vars
             datos.ano = ano;
             controlGastos.periodos.insertar(datos)
                 .then(obj => {
-                    obj.resolve ? console.log("Accion realizada") : console.log("Error " + obj.error);  
+                    obj.resolve ? console.log("Accion realizada") : console.log("Error " + errores[obj.error.toString()]);  
                     rl.close();
                 })
                 .catch(error => console.log("Error no esperado " + error));
@@ -73,7 +73,7 @@ function renombrar_periodos(){// eslint-disable-line no-unused-vars
                     datos.nuevoAno = nuevoAno;
                     controlGastos.periodos.renombrar(datos)
                         .then(obj => {
-                            obj.resolve ? console.log("Accion realizada") : console.log("Error " + obj.error);  
+                            obj.resolve ? console.log("Accion realizada") : console.log("Error " + errores[obj.error.toString()]);  
                             rl.close();
                         })
                         .catch(error => console.log("Error no esperado " + error));
@@ -94,7 +94,7 @@ function insertar_pagosrecibidos_realizados(){// eslint-disable-line no-unused-v
                     datos.valor = valor;
                     controlGastos.pagosrecibidos.insertar(datos)
                         .then(obj => {
-                            obj.resolve ? console.log("Accion realizada") : console.log("Error " + obj.error);
+                            obj.resolve ? console.log("Accion realizada") : console.log("Error " + errores[obj.error.toString()]);
                             rl.close();
                         })
                         .catch(error => console.log("Error no esperado " + error));
@@ -109,7 +109,7 @@ function borrar_pagosrecibidos_realizados(){// eslint-disable-line no-unused-var
         datos.id = id;
         controlGastos.pagosrecibidos.borrar(datos)
             .then(obj => {
-                obj.resolve ? console.log("Accion realizada") : console.log("Error " + obj.error);
+                obj.resolve ? console.log("Accion realizada") : console.log("Error " + errores[obj.error.toString()]);
                 rl.close();
             })
             .catch(error => console.log("Error no esperado " + error));
@@ -129,7 +129,7 @@ function renombrar_pagosrecibidos_realizados(){// eslint-disable-line no-unused-
                         datos.valor = valor;
                         controlGastos.pagosrecibidos.renombrar(datos)
                             .then(obj => {
-                                obj.resolve ? console.log("Accion realizada") : console.log("Error " + obj.error);
+                                obj.resolve ? console.log("Accion realizada") : console.log("Error " + errores[obj.error.toString()]);
                                 rl.close();
                             })
                             .catch(error => console.log("Error no esperado " + error));
