@@ -1,4 +1,5 @@
 const pgp = require("pg-promise")();
+const utils = require("./utils");
 
 const db = pgp({
         host:"localhost",
@@ -60,10 +61,10 @@ function insertar(tabla,datos){
                 .then((id)=>{
                     return id !== null ? true :  db.none(`insert into ${tabla} (nombre) values ($1)`,datos.nombre);
                 })
-                .then(result => result ? resolve(respuesta(false,2)) : resolve(respuesta(true)));
+                .then(result => result ? resolve(utils.respuesta(false,2)) : resolve(utils.respuesta(true)));
         }
         else{
-            resolve (respuesta(false,1));
+            resolve (utils.respuesta(false,1));
         }
     });
 }
@@ -75,13 +76,13 @@ function borrar(info,datos){
         })
         .then(result => {
             if(result === true){
-                return respuesta(false,3);
+                return utils.respuesta(false,3);
             } 
             if(result !== 0){
-                return respuesta(false,4);
+                return utils.respuesta(false,4);
             }
             return db.none(`delete from ${info.tabla} where nombre = $1`, datos.nombre)
-                    .then(()=> respuesta(true));
+                    .then(()=> utils.respuesta(true));
         });
 }    
 
@@ -102,30 +103,30 @@ function renombrar(info,datos){
                 })
                 .then(result =>{
                     if (result === true){
-                        resolve (respuesta(false,3));
+                        resolve (utils.respuesta(false,3));
                         return;
                     }
                     if (result === false){
-                        resolve (respuesta(false,2));
+                        resolve (utils.respuesta(false,2));
                         return;
                     }
                     if(result !== 0){
-                        resolve (respuesta(false,4));
+                        resolve (utils.respuesta(false,4));
                         return;
                     }
                     db.none(`update ${info.tabla} set nombre = $[nuevoNombre] where nombre = $[nombre]`, datos)
-                            .then(()=> resolve (respuesta(true)));
+                            .then(()=> resolve (utils.respuesta(true)));
                 });
         }
         else{
-            resolve(respuesta(false,1));
+            resolve(utils.respuesta(false,1));
         }
     });
 }
 
 function consultar(tabla){
     return db.any(`select nombre from ${tabla}`)
-        .then(result => respuesta(true,"",result,result.length));
+        .then(result => utils.respuesta(true,"",result,result.length));
 }
 
 function insertarPeriodos(datos){
@@ -135,10 +136,10 @@ function insertarPeriodos(datos){
                 .then(id=>{
                     return id !== null ? true : db.none("insert into periodos (mes,ano) values ($[mes],$[ano])",datos);
                 })
-                .then(result => result ? resolve(respuesta(false,7)) : resolve(respuesta(true)));
+                .then(result => result ? resolve(utils.respuesta(false,7)) : resolve(utils.respuesta(true)));
         }
         else{
-            resolve(respuesta(false,1));
+            resolve(utils.respuesta(false,1));
         }
     });
 }
@@ -150,7 +151,7 @@ function borrarPeriodos(datos){
                 return result;
             }
             return db.none("delete from periodos where mes = $[mes] and ano = $[ano]",datos)
-                .then(()=> respuesta(true));
+                .then(()=> utils.respuesta(true));
         });
 }
 
@@ -167,18 +168,18 @@ function renombrarPeriodos(datos){
                         .then(id =>{
                             return id !== null ? true : db.none("update periodos set mes = $[nuevoMes],ano = $[nuevoAno] where mes = $[mes] and ano = $[ano]",datos);
                         })
-                        .then(mensaje => mensaje ? resolve(respuesta(false,7)) : resolve(respuesta(true)));
+                        .then(mensaje => mensaje ? resolve(utils.respuesta(false,7)) : resolve(utils.respuesta(true)));
                 });
         }
         else{
-            resolve (respuesta(false,1));
+            resolve (utils.respuesta(false,1));
         }
     });
 }
                     
 function consultarPeriodos(){
     return db.any("select mes,ano from periodos")
-        .then(result => respuesta(true,"",result,result.length));
+        .then(result => utils.respuesta(true,"",result,result.length));
 }
 
 function insertarPagos(info,datos){
@@ -188,7 +189,7 @@ function insertarPagos(info,datos){
                 return result;
             }
             return db.none(`insert into ${info.tablaConsultar} (periodoid,${info.campo},valor) values ($1,$2,$3)`,[result[0].id,result[1].id,datos.valor])
-                .then(()=> respuesta(true));
+                .then(()=> utils.respuesta(true));
         });
 }
 
@@ -198,15 +199,15 @@ function borrarPagos(tabla,datos){
             db.oneOrNone(`select id from ${tabla} where id = $1`,datos.id)
                 .then(id =>{
                     if(id === null){
-                        resolve (respuesta(false,9));
+                        resolve (utils.respuesta(false,9));
                         return; 
                     }
                     db.none(`delete from ${tabla} where id = $1`,id.id)
-                        .then(()=> resolve (respuesta(true)));
+                        .then(()=> resolve (utils.respuesta(true)));
                 });  
         }
         else{
-            resolve(respuesta(false,1));
+            resolve(utils.respuesta(false,1));
         }
     });
 }
@@ -223,7 +224,7 @@ function renombrarPagos(info,datos){
                 })
                 .then(result =>{
                     if(result === true){
-                        resolve (respuesta(false,9));
+                        resolve (utils.respuesta(false,9));
                         return;
                     }
                     if(result.resolve === false){
@@ -231,23 +232,23 @@ function renombrarPagos(info,datos){
                         return;
                     }
                     db.none(`update ${info.tablaConsultar} set periodoid = $1,${info.campo} = $2,valor = $3 where id = $4`,[result[0].id,result[1].id,datos.valor,datos.id])
-                        .then(()=> resolve (respuesta(true)));
+                        .then(()=> resolve (utils.respuesta(true)));
                 });
         }
         else{
-            resolve(respuesta(false,1));
+            resolve(utils.respuesta(false,1));
         }
     });
 }
 
 function consultarPagosRecibidos(){
     return db.any("select pr.id,pe.mes,pe.ano,i.nombre,pr.valor from pagosrecibidos pr join periodos pe on pr.periodoid= pe.id join ingresos i on pr.ingresoid=i.id")
-        .then(result => respuesta(true,"",result,result.length));
+        .then(result => utils.respuesta(true,"",result,result.length));
 }
 
 function consultarPagosRealizados(){
     return db.any("select pr.id,pe.mes,pe.ano,ga.nombre,pr.valor from pagosrealizados pr join periodos pe on pr.periodoid= pe.id join gastos ga on pr.gastosid=ga.id")
-        .then(result => respuesta(true,"",result,result.length));
+        .then(result => utils.respuesta(true,"",result,result.length));
 }
 
 function validarDatos(campo){
@@ -268,22 +269,22 @@ function validarDatosUsados(datos){
                 })
                 .then(result => {
                     if(result === true){
-                        resolve (respuesta(false,8));
+                        resolve (utils.respuesta(false,8));
                         return;
                     }
                     if(result[0] !== 0){
-                        resolve (respuesta(false,5));
+                        resolve (utils.respuesta(false,5));
                         return;
                     }
                     if(result[1] !== 0){
-                        resolve (respuesta(false,6));
+                        resolve (utils.respuesta(false,6));
                         return;
                     }
                     resolve ("ok");
                 });
         }
         else{
-            resolve (respuesta(false,1));
+            resolve (utils.respuesta(false,1));
         }
     });
 }
@@ -296,18 +297,18 @@ function pagos(info,datos){
             return Promise.all([q1,q2])
                 .then(result =>{
                     if(result[0] === null){
-                        resolve (respuesta(false,8));
+                        resolve (utils.respuesta(false,8));
                         return;
                     }
                     if(result[1] === null){
-                        resolve(respuesta(false,3));
+                        resolve(utils.respuesta(false,3));
                         return;
                     }
                     resolve (result);
                 });
         }
         else{
-            resolve(respuesta(false,1));
+            resolve(utils.respuesta(false,1));
         }
     });
 }
