@@ -74,7 +74,7 @@ app.post("/renombrarIngresos", (req,res) =>{
 });
 
 app.get("/consultarPeriodos", (req,res) =>{
-    controlGastos.peridos.consultar()
+    controlGastos.periodos.consultar()
         .then(obj => obj.totalContenido === 0 ? res.json("Sin datos") : res.json(obj))
         .catch(error => res.json("Error no esperado " + error));
 });
