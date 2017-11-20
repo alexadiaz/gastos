@@ -125,7 +125,7 @@ function renombrar(info,datos){
 }
 
 function consultar(tabla){
-    return db.any(`select nombre from ${tabla}`)
+    return db.any(`select id,nombre from ${tabla}`)
         .then(result => utils.respuesta(true,"",result,result.length));
 }
 
@@ -178,7 +178,7 @@ function renombrarPeriodos(datos){
 }
                     
 function consultarPeriodos(){
-    return db.any("select mes,ano from periodos")
+    return db.any("select id,mes,ano from periodos")
         .then(result => utils.respuesta(true,"",result,result.length));
 }
 
